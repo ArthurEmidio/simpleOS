@@ -1,4 +1,4 @@
-#include "Process.h"
+#include "process.h"
 
 Process::Process(int initTime, int priority, int processingTime, int memoryBlocks,
         int printerId, int driveId, bool requestedScanner, bool requestedModem) :

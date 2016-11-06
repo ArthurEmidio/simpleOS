@@ -3,44 +3,53 @@
 #include <string>
 #include <sstream>
 #include <vector>
+#include <queue>
 
-#include "Process.h"
-
-using namespace std;
+#include "dispatcher.h"
+#include "process.h"
 
 int main(int argc, char *argv[])
 {
-    ifstream inputFile;
-    inputFile.open(argv[1], ios::in);
+    if (argc < 2) {
+        std::cout << "Usage: ./simpleSO proccesses.txt" << std::endl;
+        exit(1);
+    }
+
+    std::ifstream inputFile;
+    inputFile.open(argv[1], std::ios::in);
     if (!inputFile.is_open()) {
-        cout << "Usage: ./simpleSO proccesses.txt" << endl;
+        std::cout << "The file \"" << argv[1] << "\" could not be opened." << std::endl;
         exit(1);
     }
     
-    vector<Process*> processes;
-    string line;
-    while (getline(inputFile, line)) {
-        istringstream ss(line);
+    // Parsing the input file and creating the processes.
+    std::vector<Process*> processes;
+    std::string line;
+    while (std::getline(inputFile, line)) {
+        std::istringstream ss(line);
         
-        char tmp;
+        char sep;
         int initTime, priority, processingTime, memoryBlocks, printerId, driveId;
         bool requestedScanner, requestedModem;
         
-        ss >> initTime >> tmp;
-        ss >> priority >> tmp;
-        ss >> processingTime >> tmp;
-        ss >> memoryBlocks >> tmp;
-        ss >> printerId >> tmp;
-        ss >> requestedScanner >> tmp;
-        ss >> requestedModem >> tmp;
+        ss >> initTime >> sep;
+        ss >> priority >> sep;
+        ss >> processingTime >> sep;
+        ss >> memoryBlocks >> sep;
+        ss >> printerId >> sep;
+        ss >> requestedScanner >> sep;
+        ss >> requestedModem >> sep;
         ss >> driveId;
         
         Process *process = new Process(initTime, priority, processingTime, memoryBlocks,
                                        printerId, driveId, requestedScanner, requestedModem);
         processes.push_back(process);
-        
     }
     inputFile.close();
+
+    // Creating the dispatcher and running it.
+    Dispatcher dispatcher(processes);
+    dispatcher.run();
             
     return 0;
 }
