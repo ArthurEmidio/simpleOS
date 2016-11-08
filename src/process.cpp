@@ -4,7 +4,7 @@ Process::Process(int initTime, int priority, int processingTime, int memoryBlock
         int printerId, int driveId, bool requestedScanner, bool requestedModem) :
         _initTime(initTime), _priority(priority), _processingTime(processingTime), _memoryBlocks(memoryBlocks),
         _printerId(printerId), _driveId(driveId), _requestedScanner(requestedScanner), _requestedModem(requestedModem)
-{   
+{
 }
 
 int Process::getPid() const
@@ -25,6 +25,12 @@ int Process::getMemoryBlocks() const
 int Process::getPriority() const
 {
     return _priority;
+}
+
+void Process::agePriority()
+{
+    if(_priority > 0 && _priority < 3)
+        _priority++;
 }
 
 int Process::getInitTime() const

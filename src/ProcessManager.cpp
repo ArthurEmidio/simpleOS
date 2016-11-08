@@ -14,10 +14,12 @@ ProcessManager::~ProcessManager()
     //dtor
 }
 
-void ProcessManager::InsertProcess(Process*){
+void ProcessManager::InsertProcess(Process* process){
     //Insere o processo na fila correta de acordo com sua prioridade
+    processLines[process->getPriority()].push_back(process);
 
     /*
+        Da especificação:
         As  filas  devem  suportar  no  máximo 1000  processos.
         Portanto,  recomenda-se  utilizar  uma  fila “global”,
         que  permita  avaliar  os  recursos  disponíveis  antes
