@@ -99,7 +99,7 @@ public:
      * \brief Change the priority of the process. Priority value will be incremented by 1 if  0 < current priority < 3.
      * \return The priority of the process.
      */
-    void agePriority() const;
+    void agePriority();
 
     /*!
      * \brief Gets the time that the process is created.

@@ -29,8 +29,9 @@ int Process::getPriority() const
 
 void Process::agePriority()
 {
-    if(_priority > 0 && _priority < 3)
+    if (_priority > 1 && _priority < 3) {
         _priority++;
+    }
 }
 
 int Process::getInitTime() const
