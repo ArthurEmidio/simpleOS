@@ -1,22 +1,22 @@
 #include "memorymanager.h"
 
-MemoryManager::MemoryManager(int userBlocks, int realTimeBlocks) :
-    _userBlocks(userBlocks), _realTimeBlocks(realTimeBlocks)
+MemoryManager::MemoryManager(int realTimeBlocks, int userBlocks) :
+    _realTimeBlocks(realTimeBlocks), _userBlocks(userBlocks)
 {
-    _userSegment.push_back(MemorySet(0, userBlocks));
     _realTimeSegment.push_back(MemorySet(0, realTimeBlocks));
+    _userSegment.push_back(MemorySet(0, userBlocks));
 }
 
 bool MemoryManager::allocateMemory(Process *process)
 {
     if (process->getPriority() == 0) {
-        return _allocate(_realTimeSegment, process);
+        return _allocate(_realTimeSegment, process, 0);
     } else {
-        return _allocate(_userSegment, process);
+        return _allocate(_userSegment, process, _realTimeBlocks);
     }
 }
 
-bool MemoryManager::_allocate(std::list<MemorySet> &segment, Process *process)
+bool MemoryManager::_allocate(std::list<MemorySet> &segment, Process *process, int baseOffset)
 {
     int blocks = process->getMemoryBlocks();
 
@@ -24,13 +24,13 @@ bool MemoryManager::_allocate(std::list<MemorySet> &segment, Process *process)
         MemorySet &memorySet = *it;
         if (memorySet.process == nullptr && memorySet.blocks >= blocks) {
             if (blocks + 1 < memorySet.blocks) {
-                MemorySet newMemSet(memorySet.offset + memorySet.blocks + 1, memorySet.blocks - blocks, nullptr);
+                MemorySet newMemSet(memorySet.offset + memorySet.blocks, memorySet.blocks - blocks, nullptr);
                 segment.insert(next(it), newMemSet);
             }
 
             memorySet.blocks = blocks;
             memorySet.process = process;
-            process->setMemoryOffset(memorySet.offset);
+            process->setMemoryOffset(memorySet.offset + baseOffset);
             return true;
         }
     }
@@ -52,8 +52,26 @@ bool MemoryManager::_deallocate(std::list<MemorySet> &segment, Process *process)
     for (auto it = segment.begin(); it != segment.end(); it++) {
         MemorySet &memorySet = *it;
         if (memorySet.process == process) {
-            // TODO: implement
-            // set memory set as empty and merge if possible (i.e. can merge with 1 or 2).
+            memorySet.process = nullptr;
+            process->setMemoryOffset(-1);
+
+            if (it != segment.begin()) {
+                MemorySet &prev = *std::prev(it);
+                if (prev.process == nullptr) {
+                    memorySet.offset = prev.offset;
+                    memorySet.blocks += prev.blocks;
+                    segment.erase(std::prev(it));
+                }
+            }
+
+            if (std::next(it) != segment.end()) {
+                MemorySet &next = *std::next(it);
+                if (next.process == nullptr) {
+                    memorySet.blocks += next.blocks;
+                    segment.erase(std::next(it));
+                }
+            }
+
             return true;
         }
     }
