@@ -2,106 +2,69 @@
 
 ResourceManager::ResourceManager()
 {
-    _printerAllocation.assign(_printerQuantity, -1);
-    _driveAllocation.assign(_driveQuantity, -1);
-    _scannerAllocation.assign(_scannerQuantity, -1);
-    _modemAllocation.assign(_modemQuantity, -1);
 }
 
-bool ResourceManager::_acquire(int resourceId, std::vector<int> &allocTable, Process *process)
+bool ResourceManager::acquire(ResourceType resourceType, Process *process)
 {
-    if (resourceId > 0 && resourceId <= allocTable.size()) {
-        if (allocTable[resourceId] == -1 || allocTable[resourceId] == process->getPid()) {
-            allocTable[resourceId] = process->getPid();
-            return true;
-        }
+    switch (resourceType) {
+        case ResourceType::PRINTER:
+            return _acquire(_printerQuantity, _printerAllocation, _printerQueue, process);
+        case ResourceType::DRIVE:
+            return _acquire(_driveQuantity, _driveAllocation, _driveQueue, process);
+        case ResourceType::SCANNER:
+            return _acquire(_scannerQuantity, _scannerAllocation, _scannerQueue, process);
+        case ResourceType::MODEM:
+            return _acquire(_modemQuantity, _modemAllocation, _modemQueue, process);
     }
 
     return false;
 }
 
-bool ResourceManager::_release(int resourceId, std::vector<int> &allocTable, Process *process)
+bool ResourceManager::_acquire(int quant, std::set<Process*> &alloc, std::queue<Process*> &waitQueue, Process *process)
 {
-    if (resourceId > 0 && resourceId <= allocTable.size()) {
-        if (allocTable[resourceId] == process->getPid()) {
-            allocTable[resourceId] = -1;
-            return true;
-        }
+    if (alloc.count(process) > 0) {
+        return true; // when the process already has the resource
     }
 
+    if (alloc.size() < quant) {
+        alloc.insert(process);
+        return true;
+    }
+
+    // the resource is full
+    waitQueue.push(process);
     return false;
 }
 
-bool ResourceManager::acquirePrinter(int printerId, Process *process)
+Process* ResourceManager::release(ResourceType resourceType, Process *process)
 {
-    std::vector<int> allocTable;
-    _getAllocTable(ResourceManager::ResourceType::PRINTER, allocTable);
-    return _acquire(printerId, allocTable, process);
-}
-
-bool ResourceManager::acquireDrive(int driveId, Process *process)
-{
-    std::vector<int> allocTable;
-    _getAllocTable(ResourceManager::ResourceType::DRIVE, allocTable);
-    return _acquire(driveId, allocTable, process);
-}
-
-bool ResourceManager::acquireScanner(int scannerId, Process *process)
-{
-    std::vector<int> allocTable;
-    _getAllocTable(ResourceManager::ResourceType::SCANNER, allocTable);
-    return _acquire(scannerId, allocTable, process);
-}
-
-bool ResourceManager::acquireModem(int modemId, Process *process)
-{
-    std::vector<int> allocTable;
-    _getAllocTable(ResourceManager::ResourceType::MODEM, allocTable);
-    return _acquire(modemId, allocTable, process);
-}
-
-bool ResourceManager::releasePrinter(int printerId, Process *process)
-{
-    std::vector<int> allocTable;
-    _getAllocTable(ResourceManager::ResourceType::PRINTER, allocTable);
-    return _release(printerId, allocTable, process);
-}
-
-bool ResourceManager::releaseDrive(int driveId, Process *process)
-{
-    std::vector<int> allocTable;
-    _getAllocTable(ResourceManager::ResourceType::DRIVE, allocTable);
-    return _release(driveId, allocTable, process);
-}
-
-bool ResourceManager::releaseScanner(int scannerId, Process *process)
-{
-    std::vector<int> allocTable;
-    _getAllocTable(ResourceManager::ResourceType::SCANNER, allocTable);
-    return _release(scannerId, allocTable, process);
-}
-
-bool ResourceManager::releaseModem(int modemId, Process *process)
-{
-    std::vector<int> allocTable;
-    _getAllocTable(ResourceManager::ResourceType::MODEM, allocTable);
-    return _release(modemId, allocTable, process);
-}
-
-void ResourceManager::_getAllocTable(ResourceManager::ResourceType type, std::vector<int> &allocTable)
-{
-    switch (type) {
-        case PRINTER:
-            allocTable = _printerAllocation;
-            break;
-        case DRIVE:
-            allocTable = _driveAllocation;
-            break;
-        case SCANNER:
-            allocTable = _scannerAllocation;
-            break;
-        case MODEM:
-            allocTable = _modemAllocation;
-            break;
+    switch (resourceType) {
+        case ResourceType::PRINTER:
+            return _release(_printerAllocation, _printerQueue, process);
+        case ResourceType::DRIVE:
+            return _release(_driveAllocation, _driveQueue, process);
+        case ResourceType::SCANNER:
+            return _release(_scannerAllocation, _scannerQueue, process);
+        case ResourceType::MODEM:
+            return _release(_modemAllocation, _modemQueue, process);
     }
+
+    return nullptr;
+}
+
+Process* ResourceManager::_release(std::set<Process*> &alloc, std::queue<Process*> &waitQueue, Process *process)
+{
+    if (alloc.count(process) == 0) {
+        return nullptr;
+    }
+
+    alloc.erase(process);
+    if (!waitQueue.empty()) {
+        Process *nextProcess = waitQueue.front();
+        waitQueue.pop();
+        alloc.insert(nextProcess);
+        return nextProcess;
+    }
+
+    return nullptr;
 }

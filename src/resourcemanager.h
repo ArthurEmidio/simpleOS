@@ -2,7 +2,20 @@
 #define RESOURCEMANEGER_H
 
 #include "process.h"
-#include <vector>
+
+#include <set>
+#include <queue>
+
+/*!
+ * \brief The \c ResourceType enum lists all distinct types of resources.
+ */
+enum class ResourceType
+{
+    PRINTER, /*!< Printer device. */
+    DRIVE,   /*!< SATA drive device. */
+    SCANNER, /*!< Scanner device. */
+    MODEM    /*!< Modem device. */
+};
 
 /*!
  * \brief The \c ResourceManager class is responsible for managing all the resources of the operating system.
@@ -11,14 +24,6 @@
  */
 class ResourceManager
 {
-    /*!
-     * \brief The \c ResourceType enum lists all distinct types of resources.
-     */
-    enum ResourceType
-    {
-        PRINTER, DRIVE, SCANNER, MODEM
-    };
-
     /*!
      * \brief Holds the number of printers.
      */
@@ -40,50 +45,67 @@ class ResourceManager
     const int _modemQuantity = 1;
 
     /*!
-     * \brief The allocation table for printers.
+     * \brief Contains the processes that have a printer as acquired.
      */
-    std::vector<int> _printerAllocation;
+    std::set<Process*> _printerAllocation;
 
     /*!
-     * \brief The allocation table for SATA drives.
+     * \brief Contains the SATA drives that have a printer as acquired.
      */
-    std::vector<int> _driveAllocation;
+    std::set<Process*> _driveAllocation;
 
     /*!
-     * \brief The allocation table for scanners.
+     * \brief Contains the processes that have a scanner as acquired.
      */
-    std::vector<int> _scannerAllocation;
+    std::set<Process*> _scannerAllocation;
 
     /*!
-     * \brief The allocation table for modems.
+     * \brief Contains the processes that have a modem as acquired.
      */
-    std::vector<int> _modemAllocation;
+    std::set<Process*> _modemAllocation;
+
+    /*!
+     * \brief The queue of processes to acquire a printer.
+     */
+    std::queue<Process*> _printerQueue;
+
+    /*!
+     * \brief The queue of processes to acquire a SATA drive.
+     */
+    std::queue<Process*> _driveQueue;
+
+    /*!
+     * \brief The queue of processes to acquire a scanner.
+     */
+    std::queue<Process*> _scannerQueue;
+
+    /*!
+     * \brief The queue of processes to acquire a modem.
+     */
+    std::queue<Process*> _modemQueue;
 
     /*!
      * \brief Attemps to acquire a resource.
-     * \param resourceId The resource identifier.
-     * \param allocTable The allocation table for the specific resource (e.g. \c printerAllocation for printers).
+     * \param quant How many resources of such type exist.
+     * \param alloc The allocation set for the specific resource (e.g. \c printerAllocation for printers).
+     * \param waitQueue The queue of processes to acquire the specific resource.
      * \param process The process that wants to acquire the resource.
      * \return \c true if the resource could be acquired, or \c false otherwise.
      */
-    bool _acquire(int resourceId, std::vector<int> &allocTable, Process *process);
+    bool _acquire(int quant, std::set<Process*> &alloc, std::queue<Process*> &waitQueue, Process *process);
 
     /*!
-     * \brief Attemps to release a resource.
-     * \param resourceId The resource identifier.
-     * \param allocTable The allocation table for the specific resource (e.g. \c printerAllocation for printers).
+     * \brief Releases a resource.
+     * \param alloc The allocation set for the specific resource (e.g. \c printerAllocation for printers).
+     * \param waitQueue The queue of processes to acquire the specific resource.
      * \param process The process that wants to release the resource.
-     * \return \c true if the process released the resource. This method can return \c false in case the process
-     * doesn't didn't have the resource as acquired.
+     * \return The enqueued process that was allocated for this resource after \c process released the resource. If
+     * there is none, \c nullptr is returned.
+     *
+     * If this method is called when \c process doesn't have the resource acquired, then this method doesn't have any
+     * effects, and \c nullptr is returned.
      */
-    bool _release(int resourceId, std::vector<int> &allocTable, Process *process);
-
-    /*!
-     * \brief Gets the allocation table based on the type of resource.
-     * \param type The resource type.
-     * \param allocTable[out] The allocation table.
-     */
-    void _getAllocTable(ResourceManager::ResourceType type, std::vector<int> &allocTable);
+    Process* _release(std::set<Process*> &alloc, std::queue<Process*> &waitQueue, Process *process);
 
 public:
     /*!
@@ -92,73 +114,21 @@ public:
     ResourceManager();
 
     /*!
-     * \brief Attemps to acquire a printer device.
-     * \param printerId The printer identifier.
+     * \brief Attemps to acquire a resource.
+     * \param resourceType The resource type.
      * \param process The process that wants to acquire the resource.
      * \return \c true if the resource could be acquired, or \c false otherwise.
      */
-    bool acquirePrinter(int printerId, Process *process);
+    bool acquire(ResourceType resourceType, Process *process);
 
     /*!
-     * \brief Attemps to acquire a SATA drive device.
-     * \param printerId The drive identifier.
-     * \param process The process that wants to acquire the resource.
-     * \return \c true if the resource could be acquired, or \c false otherwise.
-     */
-    bool acquireDrive(int driveId, Process *process);
-
-    /*!
-     * \brief Attemps to acquire a scanner device.
-     * \param printerId The scanner identifier.
-     * \param process The process that wants to acquire the resource.
-     * \return \c true if the resource could be acquired, or \c false otherwise.
-     */
-    bool acquireScanner(int scannerId, Process *process);
-
-    /*!
-     * \brief Attemps to acquire a modem device.
-     * \param printerId The modem identifier.
-     * \param process The process that wants to acquire the resource.
-     * \return \c true if the resource could be acquired, or \c false otherwise.
-     */
-    bool acquireModem(int modemId, Process *process);
-
-    /*!
-     * \brief Attemps to release a printer device.
-     * \param printerId The printer identifier.
+     * \brief Attemps to release a resource.
+     * \param resourceType The resource type.
      * \param process The process that wants to release the resource.
-     * \return \c true if the resource could be released. This method can return \c false in case the process
+     * \return \c true if the process released the resource. This method can return \c false in case the process
      * doesn't didn't have the resource as acquired.
      */
-    bool releasePrinter(int printerId, Process *process);
-
-    /*!
-     * \brief Attemps to release a SATA drive device.
-     * \param printerId The drive identifier.
-     * \param process The process that wants to release the resource.
-     * \return \c true if the resource could be released. This method can return \c false in case the process
-     * doesn't didn't have the resource as acquired.
-     */
-    bool releaseDrive(int driveId, Process *process);
-
-    /*!
-     * \brief Attemps to release a scanner device.
-     * \param printerId The scanner identifier.
-     * \param process The process that wants to release the resource.
-     * \return \c true if the resource could be released. This method can return \c false in case the process
-     * doesn't didn't have the resource as acquired.
-     */
-    bool releaseScanner(int scannerId, Process *process);
-
-    /*!
-     * \brief Attemps to release a modem device.
-     * \param printerId The modem identifier.
-     * \param process The process that wants to release the resource.
-     * \return \c true if the resource could be released. This method can return \c false in case the process
-     * doesn't didn't have the resource as acquired.
-     */
-    bool releaseModem(int modemId, Process *process);
-
+    Process* release(ResourceType resourceType, Process *process);
 };
 
 #endif // RESOURCEMANEGER_H
