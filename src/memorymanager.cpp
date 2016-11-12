@@ -47,6 +47,18 @@ bool MemoryManager::deallocateMemory(Process *process)
     }
 }
 
+//bool MemoryManager::isAllocated(Process *process){
+//    if(process->getPriority() == 0){
+//        std::list<MemorySet>::iterator findProcess = std::find(_realTimeSegment.begin(), _realTimeSegment.end(), );
+//        if(findProcess == _realTimeSegment.end()) return false;
+//        else return true;
+//    }else{
+//        std::list<MemorySet>::iterator findProcess = std::find(_userSegment.begin(), _userSegment.end(), );
+//        if(findProcess == _userSegment.end()) return false;
+//        else return true;
+//    }
+//}
+
 bool MemoryManager::_deallocate(std::list<MemorySet> &segment, Process *process)
 {
     for (auto it = segment.begin(); it != segment.end(); it++) {

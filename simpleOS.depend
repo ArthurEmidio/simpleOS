@@ -1,14 +1,16 @@
 # depslib dependency file v1.0
-1478967007 source:c:\users\thiag\documents\githubrep\simpleos\src\dispatcher.cpp
+1478996171 source:c:\users\thiag\documents\githubrep\simpleos\src\dispatcher.cpp
 	"dispatcher.h"
 
-1478964839 c:\users\thiag\documents\githubrep\simpleos\src\dispatcher.h
+1478997098 c:\users\thiag\documents\githubrep\simpleos\src\dispatcher.h
 	"process.h"
 	"ProcessManager.h"
+	"memorymanager.h"
 	<vector>
 	<queue>
 	<utility>
 	<algorithm>
+	<windows.h>
 
 1478964929 c:\users\thiag\documents\githubrep\simpleos\src\process.h
 	<iostream>
@@ -23,14 +25,14 @@
 	"dispatcher.h"
 	"process.h"
 
-1478888208 source:c:\users\thiag\documents\githubrep\simpleos\src\memorymanager.cpp
+1478994899 source:c:\users\thiag\documents\githubrep\simpleos\src\memorymanager.cpp
 	"memorymanager.h"
 
 1478888208 c:\users\thiag\documents\githubrep\simpleos\src\memorymanager.h
 	"process.h"
 	<list>
 
-1478964058 source:c:\users\thiag\documents\githubrep\simpleos\src\process.cpp
+1478996272 source:c:\users\thiag\documents\githubrep\simpleos\src\process.cpp
 	"process.h"
 
 1478888208 source:c:\users\thiag\documents\githubrep\simpleos\src\resourcemanager.cpp
@@ -47,6 +49,6 @@
 	<iostream>
 	"process.h"
 
-1478966887 source:c:\users\thiag\documents\githubrep\simpleos\src\processmanager.cpp
+1478967252 source:c:\users\thiag\documents\githubrep\simpleos\src\processmanager.cpp
 	"ProcessManager.h"
 

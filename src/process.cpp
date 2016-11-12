@@ -81,13 +81,13 @@ void Process::setProcessingTime(int processingTime)
 
 void Process::printProcess(){
     std::cout << " - pid: " << _pid << std::endl;
-    std::cout << " - memOffset: " << _memOffset << std::endl;
+    //std::cout << " - memOffset: " << _memOffset << std::endl;
     std::cout << " - initTime: " << _initTime << std::endl;
     std::cout << " - priority: " << _priority << std::endl;
     std::cout << " - processingTime: " << _processingTime << std::endl;
-    std::cout << " - memoryBlocks: " << _memoryBlocks << std::endl;
-    std::cout << " - printerId: " << _printerId << std::endl;
-    std::cout << " - driverId: " << _driveId << std::endl;
-    std::cout << " - requestedScanner: " << _requestedScanner << std::endl;
-    std::cout << " - requestedModen: " << _requestedModem << std::endl;
+    //std::cout << " - memoryBlocks: " << _memoryBlocks << std::endl;
+    //std::cout << " - printerId: " << _printerId << std::endl;
+    //std::cout << " - driverId: " << _driveId << std::endl;
+    //std::cout << " - requestedScanner: " << _requestedScanner << std::endl;
+    //std::cout << " - requestedModen: " << _requestedModem << std::endl;
 }

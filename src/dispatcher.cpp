@@ -46,6 +46,8 @@ void Dispatcher::run()
     std::pair<int, std::vector<Process*>> nextProcesses;
     Process *toExecution;
     int i = 0;
+
+    MemoryManager memoryManager;
     do{
         std::cout << "**  Ciclo de execucao [ " << i++ << " ]  **" << std::endl;
         nextProcesses = _getNextProcesses();
@@ -57,19 +59,50 @@ void Dispatcher::run()
 
         toExecution = ProcessManager::getNextProcess();
         if(toExecution->getInitTime() == -1) break;
-        std::cout << "--- Processo na CPU: ---" << std::endl;
-        toCPU(toExecution);
+
+        //gambiarra!! ao invés da linha abaixo (de sempre remover o processo),o correto seria:
+        //if(processo foi alocado){
+        //  executa()
+        //}else{
+        //  if(conseguiuAlocar()){
+        //      executa()
+        //  }else{
+        //      voltaPraFilaSemExecutar();
+        //  }
+        //}
+        memoryManager.deallocateMemory(toExecution);
+
+        if(memoryManager.allocateMemory(toExecution)){
+            std::cout << "--- Processo na CPU: ---" << std::endl;
+            toCPU(toExecution);
+        }else{
+            std::cout << " -> Nao ha blocos de memoria disponiveis para o processo atual." << std::endl;
+        }
+
         if(toExecution->getProcessingTime() > 0){
             ProcessManager::getInstance()->InsertBackProcess(toExecution);
+        }else{
+            memoryManager.deallocateMemory(toExecution);
         }
         std::cout << "**********************************" << std::endl;
+
+        #ifdef _WIN32
+            Sleep(4000);
+            system("cls");
+        #endif // _WIN32
     }while(toExecution->getInitTime() != -1);
     DEBUG_PRINT("Dispatcher::run(): finalizado")
 }
 
 void Dispatcher::toCPU(Process *process){
+    //O loop de execuçao em relação a CPU não funciona como "umm loop por quantum".
+    //podemos fazer funcionar dessa forma.
     DEBUG_PRINT("Dispatcher::toCPU(): iniciado")
-    process->setProcessingTime((process->getProcessingTime() < _quantum) ? 0 : process->getProcessingTime() - _quantum);
+    if(process->getPriority() > 0){
+        process->setProcessingTime((process->getProcessingTime() < _quantum) ? 0 : process->getProcessingTime() - _quantum);
+    }else{
+        process->setProcessingTime(0);
+    }
     process->printProcess();
     DEBUG_PRINT("Dispatcher::toCPU(): finalizado")
 }

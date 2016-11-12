@@ -3,11 +3,15 @@
 
 #include "process.h"
 #include "ProcessManager.h"
+#include "memorymanager.h"
+
 #include <vector>
 #include <queue>
 #include <utility>
 #include <algorithm>
-
+#ifdef _WIN32
+    #include <windows.h>
+#endif // __WINDOWS__
 /*!
  * \brief \c The Dispatcher class is the context behind the execution of an operating system.
  *
