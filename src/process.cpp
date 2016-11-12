@@ -5,6 +5,8 @@ Process::Process(int initTime, int priority, int processingTime, int memoryBlock
         _initTime(initTime), _priority(priority), _processingTime(processingTime), _memoryBlocks(memoryBlocks),
         _printerId(printerId), _driveId(driveId), _requestedScanner(requestedScanner), _requestedModem(requestedModem)
 {
+    _memOffset = -1;
+    _pid = -1;
 }
 
 int Process::getPid() const
@@ -25,13 +27,6 @@ int Process::getMemoryBlocks() const
 int Process::getPriority() const
 {
     return _priority;
-}
-
-void Process::agePriority()
-{
-    if (_priority > 1 && _priority < 3) {
-        _priority++;
-    }
 }
 
 int Process::getInitTime() const
@@ -72,4 +67,27 @@ void Process::setPid(int pid)
 void Process::setMemoryOffset(int offset)
 {
     _memOffset = offset;
+}
+
+void Process::setPriority(int priority)
+{
+    _priority = priority;
+}
+
+void Process::setProcessingTime(int processingTime)
+{
+    _processingTime = processingTime;
+}
+
+void Process::printProcess(){
+    std::cout << " - pid: " << _pid << std::endl;
+    std::cout << " - memOffset: " << _memOffset << std::endl;
+    std::cout << " - initTime: " << _initTime << std::endl;
+    std::cout << " - priority: " << _priority << std::endl;
+    std::cout << " - processingTime: " << _processingTime << std::endl;
+    std::cout << " - memoryBlocks: " << _memoryBlocks << std::endl;
+    std::cout << " - printerId: " << _printerId << std::endl;
+    std::cout << " - driverId: " << _driveId << std::endl;
+    std::cout << " - requestedScanner: " << _requestedScanner << std::endl;
+    std::cout << " - requestedModen: " << _requestedModem << std::endl;
 }

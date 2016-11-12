@@ -1,0 +1,52 @@
+# depslib dependency file v1.0
+1478967007 source:c:\users\thiag\documents\githubrep\simpleos\src\dispatcher.cpp
+	"dispatcher.h"
+
+1478964839 c:\users\thiag\documents\githubrep\simpleos\src\dispatcher.h
+	"process.h"
+	"ProcessManager.h"
+	<vector>
+	<queue>
+	<utility>
+	<algorithm>
+
+1478964929 c:\users\thiag\documents\githubrep\simpleos\src\process.h
+	<iostream>
+
+1478958780 source:c:\users\thiag\documents\githubrep\simpleos\src\main.cpp
+	<fstream>
+	<iostream>
+	<string>
+	<sstream>
+	<vector>
+	<queue>
+	"dispatcher.h"
+	"process.h"
+
+1478888208 source:c:\users\thiag\documents\githubrep\simpleos\src\memorymanager.cpp
+	"memorymanager.h"
+
+1478888208 c:\users\thiag\documents\githubrep\simpleos\src\memorymanager.h
+	"process.h"
+	<list>
+
+1478964058 source:c:\users\thiag\documents\githubrep\simpleos\src\process.cpp
+	"process.h"
+
+1478888208 source:c:\users\thiag\documents\githubrep\simpleos\src\resourcemanager.cpp
+	"resourcemanager.h"
+
+1478888208 c:\users\thiag\documents\githubrep\simpleos\src\resourcemanager.h
+	"process.h"
+	<set>
+	<queue>
+
+1478964274 c:\users\thiag\documents\githubrep\simpleos\src\processmanager.h
+	<vector>
+	<queue>
+	<iostream>
+	"process.h"
+
+1478966887 source:c:\users\thiag\documents\githubrep\simpleos\src\processmanager.cpp
+	"ProcessManager.h"
+

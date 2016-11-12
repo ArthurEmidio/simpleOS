@@ -2,9 +2,11 @@
 #define DISPATCHER_H
 
 #include "process.h"
+#include "ProcessManager.h"
 #include <vector>
 #include <queue>
 #include <utility>
+#include <algorithm>
 
 /*!
  * \brief \c The Dispatcher class is the context behind the execution of an operating system.
@@ -41,6 +43,16 @@ public:
      * \brief Executes the OS.
      */
     void run();
+
+    /*!
+     * \brief Simulates CPU executing process.
+     */
+    void toCPU(Process*);
+
+    /*!
+     * \brief Simulates quantum time.
+     */
+    int _quantum;
 
 };
 

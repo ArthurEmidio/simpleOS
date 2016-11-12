@@ -1,6 +1,7 @@
 #ifndef PROCESS_H
 #define PROCESS_H
 
+#include <iostream>
 /*!
  * \brief The \c Process class represents what is a process in an operating system.
  */
@@ -96,12 +97,6 @@ public:
     int getPriority() const;
 
     /*!
-     * \brief Change the priority of the process. Priority value will be incremented by 1 if  0 < current priority < 3.
-     * \return The priority of the process.
-     */
-    void agePriority();
-
-    /*!
      * \brief Gets the time that the process is created.
      * \return The time the process is created.
      */
@@ -148,6 +143,23 @@ public:
      * \param offset The memory offset.
      */
     void setMemoryOffset(int offset);
+
+    /*!
+     * \brief Sets the priority to the process.
+     * \param new priority.
+     */
+    void setPriority(int priority);
+
+    /*!
+     * \brief Sets the processing time the process.
+     * \param new processing time.
+     */
+    void setProcessingTime(int processingTime);
+
+    /*!
+     * \brief Prints the process' information.
+     */
+    void printProcess();
 
 };
 
