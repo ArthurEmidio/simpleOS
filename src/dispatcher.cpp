@@ -60,23 +60,16 @@ void Dispatcher::run()
         toExecution = ProcessManager::getNextProcess();
         if(toExecution->getInitTime() == -1) break;
 
-        //gambiarra!! ao invés da linha abaixo (de sempre remover o processo),o correto seria:
-        //if(processo foi alocado){
-        //  executa()
-        //}else{
-        //  if(conseguiuAlocar()){
-        //      executa()
-        //  }else{
-        //      voltaPraFilaSemExecutar();
-        //  }
-        //}
-        memoryManager.deallocateMemory(toExecution);
-
-        if(memoryManager.allocateMemory(toExecution)){
+        if(toExecution->getMemoryOffset() != -1){
             std::cout << "--- Processo na CPU: ---" << std::endl;
             toCPU(toExecution);
         }else{
-            std::cout << " -> Nao ha blocos de memoria disponiveis para o processo atual." << std::endl;
+            if(memoryManager.allocateMemory(toExecution)){
+                std::cout << "--- Processo na CPU: ---" << std::endl;
+                toCPU(toExecution);
+            }else{
+                std::cout << " -> Nao ha blocos de memoria disponiveis para o processo atual." << std::endl;
+            }
         }
 
         if(toExecution->getProcessingTime() > 0){
