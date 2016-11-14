@@ -81,7 +81,7 @@ void Dispatcher::run()
             }
         }
 
-        if(toExecution->getProcessingTime() > 0){
+        if(!toExecution->getPriority() && toExecution->getProcessingTime() > 0){//checar para processo tempo real
             ProcessManager::getInstance()->InsertBackProcess(toExecution);
         }else{
             resourceManager.releaseAll(toExecution);
