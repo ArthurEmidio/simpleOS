@@ -98,7 +98,7 @@ Process* ProcessManager::getNextProcess(){
     //se não, executar o processo first in na fila i e envelhecê-lo para a fila i+1, i >=1.
     //manter o processo na mesma fila caso i == 3.
     DEBUG_PRINT("ProcessManager::getNextProcess(): iniciado")
-    Process *nextProcess = new Process(-1,0,0,0,0,0,0,0);
+    Process *nextProcess = new Process(0,0,0,0,0,0,0,0);
     if(processLines[0].size()){
         nextProcess = processLines[0][0];
         processLines[0].erase(processLines[0].begin());

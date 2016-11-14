@@ -20,7 +20,7 @@ bool ResourceManager::acquire(ResourceType resourceType, Process *process)
     return false;
 }
 
-bool ResourceManager::_acquire(int quant, std::set<Process*> &alloc, std::queue<Process*> &waitQueue, Process *process)
+bool ResourceManager::_acquire(unsigned int quant, std::set<Process*> &alloc, std::queue<Process*> &waitQueue, Process *process)
 {
     if (alloc.count(process) > 0) {
         return true; // when the process already has the resource

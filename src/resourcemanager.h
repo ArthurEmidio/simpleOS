@@ -92,7 +92,7 @@ class ResourceManager
      * \param process The process that wants to acquire the resource.
      * \return \c true if the resource could be acquired, or \c false otherwise.
      */
-    bool _acquire(int quant, std::set<Process*> &alloc, std::queue<Process*> &waitQueue, Process *process);
+    bool _acquire(unsigned int quant, std::set<Process*> &alloc, std::queue<Process*> &waitQueue, Process *process);
 
     /*!
      * \brief Releases a resource.

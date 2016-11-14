@@ -57,6 +57,7 @@ public:
      * \brief Simulates quantum time.
      */
     int _quantum;
+    int _currentTimeStamp;
 
 };
 

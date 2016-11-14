@@ -18,6 +18,7 @@
 Dispatcher::Dispatcher(std::vector<Process*> processes)
 {
     _quantum = 2;
+    _currentTimeStamp = 0;
     _futureProcesses = processes;
     sort(_futureProcesses.begin(), _futureProcesses.end(), [](Process *p1, Process *p2) {
         return p1->getInitTime() > p2->getInitTime();
@@ -44,31 +45,38 @@ void Dispatcher::run()
 {
     DEBUG_PRINT("Dispatcher::run(): iniciado")
     std::pair<int, std::vector<Process*>> nextProcesses;
-    Process *toExecution;
-    int i = 0;
+    nextProcesses = _getNextProcesses();//coloca o primeiro timeStamp na espra
+    Process *toExecution = nullptr;
 
     MemoryManager memoryManager;
     do{
-        std::cout << "**  Ciclo de execucao [ " << i++ << " ]  **" << std::endl;
-        nextProcesses = _getNextProcesses();
-        if(nextProcesses.first != -1){
-            ProcessManager::getInstance()->InsertTimeStampProcesses(nextProcesses);
+        std::cout << "**  TimeStamp atual[ " << _currentTimeStamp << " ]  **" << std::endl;
+        if(nextProcesses.first > 0){
+            std::cout << "**  Proximos processos em TimeStamp: " << nextProcesses.first << "  **"  << std::endl;
+        }else{
+            std::cout << "**  Sem processos novos  **" << std::endl;
         }
+        if(nextProcesses.first == _currentTimeStamp++){
+            ProcessManager::getInstance()->InsertTimeStampProcesses(nextProcesses);
+            nextProcesses = _getNextProcesses();
+        }
+
         std::cout << "--- Filas de processos: ---" << std::endl;
         ProcessManager::getInstance()->PrintLines();
-
-        toExecution = ProcessManager::getNextProcess();
-        if(toExecution->getInitTime() == -1) break;
-
-        if(toExecution->getMemoryOffset() != -1){
-            std::cout << "--- Processo na CPU: ---" << std::endl;
-            toCPU(toExecution);
-        }else{
-            if(memoryManager.allocateMemory(toExecution)){
+        if(toExecution == nullptr || !(toExecution->getPriority() == 0 && toExecution->getProcessingTime() > 0) ){
+            toExecution = ProcessManager::getNextProcess();
+        }
+        if(toExecution->getProcessingTime() > 0){
+            if(toExecution->getMemoryOffset() != -1){
                 std::cout << "--- Processo na CPU: ---" << std::endl;
                 toCPU(toExecution);
             }else{
-                std::cout << " -> Nao ha blocos de memoria disponiveis para o processo atual." << std::endl;
+                if(memoryManager.allocateMemory(toExecution)){
+                    std::cout << "--- Processo na CPU: ---" << std::endl;
+                    toCPU(toExecution);
+                }else{
+                    std::cout << " -> Nao ha blocos de memoria disponiveis para o processo atual." << std::endl;
+                }
             }
         }
 
@@ -83,7 +91,7 @@ void Dispatcher::run()
             Sleep(4000);
             system("cls");
         #endif // _WIN32
-    }while(toExecution->getInitTime() != -1);
+    }while(toExecution->getInitTime() > 0 || nextProcesses.first != -1);
     DEBUG_PRINT("Dispatcher::run(): finalizado")
 }
 
@@ -91,11 +99,7 @@ void Dispatcher::toCPU(Process *process){
     //O loop de execuçao em relação a CPU não funciona como "umm loop por quantum".
     //podemos fazer funcionar dessa forma.
     DEBUG_PRINT("Dispatcher::toCPU(): iniciado")
-    if(process->getPriority() > 0){
-        process->setProcessingTime((process->getProcessingTime() < _quantum) ? 0 : process->getProcessingTime() - _quantum);
-    }else{
-        process->setProcessingTime(0);
-    }
+    process->setProcessingTime((process->getProcessingTime() < _quantum) ? 0 : process->getProcessingTime() - _quantum);
     process->printProcess();
     DEBUG_PRINT("Dispatcher::toCPU(): finalizado")
 }
