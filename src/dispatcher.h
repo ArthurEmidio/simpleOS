@@ -4,6 +4,7 @@
 #include "process.h"
 #include "ProcessManager.h"
 #include "memorymanager.h"
+#include "resourcemanager.h"
 
 #include <vector>
 #include <queue>

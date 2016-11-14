@@ -122,13 +122,29 @@ public:
     bool acquire(ResourceType resourceType, Process *process);
 
     /*!
+     * \brief Attemps to acquire all resources at once.
+     * \param process The process that wants to acquire the resource.
+     * \return \c true if the resources could be acquired, or \c false otherwise.
+     */
+    bool acquireAll(Process *process);
+
+    /*!
      * \brief Attemps to release a resource.
      * \param resourceType The resource type.
      * \param process The process that wants to release the resource.
      * \return \c true if the process released the resource. This method can return \c false in case the process
      * doesn't didn't have the resource as acquired.
      */
-    Process* release(ResourceType resourceType, Process *process);
+    bool release(ResourceType resourceType, Process *process);
+
+    /*!
+     * \brief Attemps to release all resource.
+     * \param process The process that wants to release the resource.
+     * \return \c true if the process released the resource. This method can return \c false in case the process
+     * doesn't didn't have the resource as acquired.
+     */
+    bool releaseAll(Process *process);
+
 };
 
 #endif // RESOURCEMANEGER_H

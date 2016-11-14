@@ -1,11 +1,12 @@
 # depslib dependency file v1.0
-1479133207 source:c:\users\thiag\documents\githubrep\simpleos\src\dispatcher.cpp
+1479140470 source:c:\users\thiag\documents\githubrep\simpleos\src\dispatcher.cpp
 	"dispatcher.h"
 
-1479130047 c:\users\thiag\documents\githubrep\simpleos\src\dispatcher.h
+1479139852 c:\users\thiag\documents\githubrep\simpleos\src\dispatcher.h
 	"process.h"
 	"ProcessManager.h"
 	"memorymanager.h"
+	"resourcemanager.h"
 	<vector>
 	<queue>
 	<utility>
@@ -35,10 +36,10 @@
 1478996272 source:c:\users\thiag\documents\githubrep\simpleos\src\process.cpp
 	"process.h"
 
-1479133352 source:c:\users\thiag\documents\githubrep\simpleos\src\resourcemanager.cpp
+1479140342 source:c:\users\thiag\documents\githubrep\simpleos\src\resourcemanager.cpp
 	"resourcemanager.h"
 
-1479133369 c:\users\thiag\documents\githubrep\simpleos\src\resourcemanager.h
+1479140003 c:\users\thiag\documents\githubrep\simpleos\src\resourcemanager.h
 	"process.h"
 	<set>
 	<queue>

@@ -49,6 +49,7 @@ void Dispatcher::run()
     Process *toExecution = nullptr;
 
     MemoryManager memoryManager;
+    ResourceManager resourceManager;
     do{
         std::cout << "**  TimeStamp atual[ " << _currentTimeStamp << " ]  **" << std::endl;
         if(nextProcesses.first > 0){
@@ -71,7 +72,7 @@ void Dispatcher::run()
                 std::cout << "--- Processo na CPU: ---" << std::endl;
                 toCPU(toExecution);
             }else{
-                if(memoryManager.allocateMemory(toExecution)){
+                if(memoryManager.allocateMemory(toExecution) && resourceManager.acquireAll(toExecution)){
                     std::cout << "--- Processo na CPU: ---" << std::endl;
                     toCPU(toExecution);
                 }else{
@@ -83,6 +84,7 @@ void Dispatcher::run()
         if(toExecution->getProcessingTime() > 0){
             ProcessManager::getInstance()->InsertBackProcess(toExecution);
         }else{
+            resourceManager.releaseAll(toExecution);
             memoryManager.deallocateMemory(toExecution);
         }
         std::cout << "**********************************" << std::endl;
