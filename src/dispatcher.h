@@ -2,7 +2,7 @@
 #define DISPATCHER_H
 
 #include "process.h"
-#include "ProcessManager.h"
+#include "processmanager.h"
 #include "memorymanager.h"
 #include "resourcemanager.h"
 

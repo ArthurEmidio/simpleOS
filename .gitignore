@@ -1,2 +1,4 @@
 build/
 CMakelists.txt.user
+simpleOS.depend
+simpleOS.cbp
