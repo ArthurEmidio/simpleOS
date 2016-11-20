@@ -38,14 +38,14 @@ class Process
     int _memoryBlocks;
 
     /*!
-     * \brief The printer identifier that the process requests, or 0 if none.
+     * \brief Whether the process has requested a printer.
      */
-    int _printerId;
+    bool _requestedPrinter;
 
     /*!
-     * \brief The drive identifier that the process requests, or 0 if none.
+     * \brief Whether the process has requested a SATA drive.
      */
-    int _driveId;
+    bool _requestedDrive;
 
     /*!
      * \brief Whether the process has requested a scanner.
@@ -64,13 +64,13 @@ public:
      * \param priority The priority of the process. The hightest priority is 0, the second-highest is 1, and so on.
      * \param processingTime The time it takes for the process to fully execute.
      * \param memoryBlocks How many blocks of memory that the process needs to execute.
-     * \param printerId The printer identifier that the process requests, or 0 if none.
-     * \param driveId The drive identifier that the process requests, or 0 if none.
+     * \param requestedPrinter Whether the process has requested a printer.
+     * \param requestedDrive Whether the process has requested a SATA drive.
      * \param requestedScanner Whether the process has requested a scanner.
      * \param requestedModem Whether the process has requested a modem.
      */
     Process(int initTime, int priority, int processingTime, int memoryBlocks,
-            int printerId, int driveId, bool requestedScanner, bool requestedModem);
+            bool requestedPrinter, bool requestedDrive, bool requestedScanner, bool requestedModem);
 
     /*!
      * \brief Gets the PID given to the process by the OS.
@@ -109,26 +109,26 @@ public:
     int getProcessingTime() const;
 
     /*!
-     * \brief Gets the printer identifier that the process requests, or 0 if none.
-     * \return The printer identifier, of 0 if none.
+     * \brief Gets whether the process has requested a printer.
+     * \return \c true if the printer has been requested, or \c false otherwise.
      */
-    int getPrinterId() const;
+    bool didRequestPrinter() const;
 
     /*!
-     * \brief Gets the drive identifier that the process requests, or 0 if none.
-     * \return The drive identifier, or 0 if none.
+     * \brief Gets whether the process has requested a SATA drive.
+     * \return \c true if the drive has been requested, or \c false otherwise.
      */
-    int getDriveId() const;
+    bool didRequestDrive() const;
 
     /*!
      * \brief Gets whether the process has requested a scanner.
-     * \return Whether the scanner is requested by the process.
+     * \return \c true if the scanner. has been requested, or \c false otherwise.
      */
     bool didRequestScanner() const;
 
     /*!
-     * \brief Gets whether the process has requested a modem.
-     * \return Whether the scanner is requested by the process.
+     * \brief Gets whether the process has requested modem.
+     * \return \c true if the modem has been requested, or \c false otherwise.
      */
     bool didRequestModem() const;
 
@@ -157,7 +157,7 @@ public:
     void setProcessingTime(int processingTime);
 
     /*!
-     * \brief Prints the process' information.
+     * \brief Prints the information about the process.
      */
     void printProcess();
 

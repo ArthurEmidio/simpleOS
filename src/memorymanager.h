@@ -2,6 +2,7 @@
 #define MEMORYMANAGER_H
 
 #include "process.h"
+
 #include <list>
 
 /*!
@@ -16,7 +17,7 @@
 class MemoryManager
 {
     /*!
-     * \brief The \c MemorySet struct is a inner representation of a contiguous sequence of memory blocks.
+     * \brief The \c MemorySet struct is an internal representation of a contiguous sequence of memory blocks.
      */
     struct MemorySet
     {
@@ -103,7 +104,7 @@ public:
     bool allocateMemory(Process *process);
 
     /*!
-     * \brief Attempts to de allocate memory for the given process.
+     * \brief Attempts to deallocate memory for the given process.
      * \param process The process to be deallocated.
      * \return \c true if the process could be deallocated, or \c false otherwise. \c false is only returned if
      * the process doesn't have allocated memory.

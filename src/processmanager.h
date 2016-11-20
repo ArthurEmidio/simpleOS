@@ -9,22 +9,22 @@
 
 class ProcessManager
 {
-    public:
-        static void InsertTimeStampProcesses(std::pair<int, std::vector<Process*>>);
-        static void InsertBackProcess(Process *process);
-        static Process* getNextProcess();
-        static void PrintLines();
-        static ProcessManager* getInstance();
+    int _processCount;
 
-    protected:
+    //vetor contendo as 4 filas de prioridade
+    std::vector<std::vector<Process*>> _processLines;
 
-    private:
-        //Singleton
-        ProcessManager();
-        static ProcessManager *instance;
-        static int processCount;
-        //vetor contendo as 4 filas de prioridade
-        static std::vector<std::vector<Process*>> processLines;
+public:
+    ProcessManager();
+
+    void insertTimestampProcesses(std::pair<int, std::vector<Process*>> timestampProcessList);
+
+    void insertBackProcess(Process *process);
+
+    Process* getNextProcess();
+
+    void printLines();
+
 };
 
 #endif // PROCESSMANAGER_H

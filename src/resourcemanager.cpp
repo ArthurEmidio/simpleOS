@@ -22,39 +22,20 @@ bool ResourceManager::acquire(ResourceType resourceType, Process *process)
 
 bool ResourceManager::acquireAll(Process *process)
 {
-    if(process->didRequestModem()){
-        if(acquire(ResourceType::MODEM, process));
-        else return false;
+    if ((process->didRequestModem() && !acquire(ResourceType::MODEM, process)) ||
+        (process->didRequestScanner() && !acquire(ResourceType::SCANNER, process)) ||
+        (process->didRequestDrive() && !acquire(ResourceType::DRIVE, process)) ||
+        (process->didRequestPrinter() && !acquire(ResourceType::PRINTER, process))) {
+        releaseAll(process);
+        return false;
     }
-    if(process->didRequestScanner()){
-        if(acquire(ResourceType::SCANNER, process));
-        else{
-            release(ResourceType::MODEM, process);
-            return false;
-        }
-    }
-    if(process->getDriveId()){
-        if(acquire(ResourceType::DRIVE, process));
-        else{
-            release(ResourceType::MODEM, process);
-            release(ResourceType::SCANNER, process);
-            return false;
-        }
-    }
-    if(process->getPrinterId()){
-        if(acquire(ResourceType::PRINTER, process));
-        else{
-            release(ResourceType::MODEM, process);
-            release(ResourceType::SCANNER, process);
-            release(ResourceType::DRIVE, process);
-            return false;
-        }
-    }
+
     return true;
 }
 
 
-bool ResourceManager::_acquire(unsigned int quant, std::set<Process*> &alloc, std::queue<Process*> &waitQueue, Process *process)
+bool ResourceManager::_acquire(unsigned int quant, std::set<Process*> &alloc, std::queue<Process*> &waitQueue,
+                               Process *process)
 {
     if (alloc.count(process) > 0) {
         return true; // when the process already has the resource
@@ -74,25 +55,24 @@ bool ResourceManager::release(ResourceType resourceType, Process *process)
 {
     switch (resourceType) {
         case ResourceType::PRINTER:
-            return _release(_printerAllocation, _printerQueue, process)? true: false;
+            return _release(_printerAllocation, _printerQueue, process) ? true: false;
         case ResourceType::DRIVE:
-            return _release(_driveAllocation, _driveQueue, process)? true: false;
+            return _release(_driveAllocation, _driveQueue, process) ? true: false;
         case ResourceType::SCANNER:
-            return _release(_scannerAllocation, _scannerQueue, process)? true: false;
+            return _release(_scannerAllocation, _scannerQueue, process) ? true: false;
         case ResourceType::MODEM:
-            return _release(_modemAllocation, _modemQueue, process)? true: false;
+            return _release(_modemAllocation, _modemQueue, process) ? true: false;
     }
 
     return false;
 }
 
-bool ResourceManager::releaseAll(Process *process)
+void ResourceManager::releaseAll(Process *process)
 {
-    if(process->didRequestModem()) release(ResourceType::MODEM, process);
-    if(process->didRequestScanner()) release(ResourceType::SCANNER, process);
-    if(process->getDriveId()) release(ResourceType::DRIVE, process);
-    if(process->getPrinterId()) release(ResourceType::PRINTER, process);
-    return true;
+    if (process->didRequestModem()) release(ResourceType::MODEM, process);
+    if (process->didRequestScanner()) release(ResourceType::SCANNER, process);
+    if (process->didRequestDrive()) release(ResourceType::DRIVE, process);
+    if (process->didRequestPrinter()) release(ResourceType::PRINTER, process);
 }
 
 Process* ResourceManager::_release(std::set<Process*> &alloc, std::queue<Process*> &waitQueue, Process *process)

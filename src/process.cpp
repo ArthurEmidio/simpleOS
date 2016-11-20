@@ -1,9 +1,10 @@
 #include "process.h"
 
 Process::Process(int initTime, int priority, int processingTime, int memoryBlocks,
-        int printerId, int driveId, bool requestedScanner, bool requestedModem) :
+        bool requestedPrinter, bool requestedDrive, bool requestedScanner, bool requestedModem) :
         _initTime(initTime), _priority(priority), _processingTime(processingTime), _memoryBlocks(memoryBlocks),
-        _printerId(printerId), _driveId(driveId), _requestedScanner(requestedScanner), _requestedModem(requestedModem)
+        _requestedPrinter(requestedPrinter), _requestedDrive(requestedDrive), _requestedScanner(requestedScanner),
+        _requestedModem(requestedModem)
 {
     _memOffset = -1;
     _pid = -1;
@@ -39,14 +40,14 @@ int Process::getProcessingTime() const
     return _processingTime;
 }
 
-int Process::getPrinterId() const
+bool Process::didRequestPrinter() const
 {
-    return _printerId;
+    return _requestedPrinter;
 }
 
-int Process::getDriveId() const
+bool Process::didRequestDrive() const
 {
-    return _driveId;
+    return _requestedDrive;
 }
 
 bool Process::didRequestScanner() const
@@ -79,15 +80,15 @@ void Process::setProcessingTime(int processingTime)
     _processingTime = processingTime;
 }
 
-void Process::printProcess(){
-    std::cout << " - pid: " << _pid << std::endl;
-    //std::cout << " - memOffset: " << _memOffset << std::endl;
-    std::cout << " - initTime: " << _initTime << std::endl;
-    std::cout << " - priority: " << _priority << std::endl;
-    std::cout << " - processingTime: " << _processingTime << std::endl;
-    //std::cout << " - memoryBlocks: " << _memoryBlocks << std::endl;
-    //std::cout << " - printerId: " << _printerId << std::endl;
-    //std::cout << " - driverId: " << _driveId << std::endl;
-    //std::cout << " - requestedScanner: " << _requestedScanner << std::endl;
-    //std::cout << " - requestedModen: " << _requestedModem << std::endl;
+void Process::printProcess()
+{
+    printf("PID: %d\n", _pid);
+    printf("offset: %d\n", _memOffset);
+    printf("blocks: %d\n", _memoryBlocks);
+    printf("priority: %d\n", _priority);
+    printf("time: %d\n", _initTime);
+    printf("printers: %d\n", _requestedPrinter);
+    printf("scanners: %d\n", _requestedScanner);
+    printf("modems: %d\n", _requestedModem);
+    printf("drives: %d\n", _requestedDrive);
 }

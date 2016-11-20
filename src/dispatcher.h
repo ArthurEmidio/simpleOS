@@ -13,6 +13,7 @@
 #ifdef _WIN32
     #include <windows.h>
 #endif // __WINDOWS__
+
 /*!
  * \brief \c The Dispatcher class is the context behind the execution of an operating system.
  *
@@ -37,6 +38,16 @@ class Dispatcher
      */
     std::pair<int, std::vector<Process*>> _getNextProcesses();
 
+    /*!
+     * \brief Holds the quantum.
+     */
+    const int _quantum;
+
+    /*!
+     * \brief Holds the current timestamp.
+     */
+    int _currentTimestamp;
+
 public:
     /*!
      * \brief Default constructor.
@@ -53,12 +64,6 @@ public:
      * \brief Simulates CPU executing process.
      */
     void toCPU(Process*);
-
-    /*!
-     * \brief Simulates quantum time.
-     */
-    int _quantum;
-    int _currentTimeStamp;
 
 };
 

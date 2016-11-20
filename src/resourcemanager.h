@@ -140,10 +140,8 @@ public:
     /*!
      * \brief Attemps to release all resource.
      * \param process The process that wants to release the resource.
-     * \return \c true if the process released the resource. This method can return \c false in case the process
-     * doesn't didn't have the resource as acquired.
      */
-    bool releaseAll(Process *process);
+    void releaseAll(Process *process);
 
 };
 
