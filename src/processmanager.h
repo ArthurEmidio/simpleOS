@@ -16,7 +16,7 @@ class ProcessManager
     /*!
      * \brief The number of priority queues.
      */
-    const int _queuesQuant;
+    const int _queuesQuant = 4;
 
     /*!
      * \brief A vector containing all priority queues.

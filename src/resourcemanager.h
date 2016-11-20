@@ -3,6 +3,7 @@
 
 #include "process.h"
 
+#include <map>
 #include <set>
 #include <queue>
 
@@ -24,6 +25,12 @@ enum class ResourceType
  */
 class ResourceManager
 {
+    enum ProcessStatus
+    {
+        IN_QUEUE,
+        WITH_RESOURCE
+    };
+
     /*!
      * \brief Holds the number of printers.
      */
@@ -47,22 +54,30 @@ class ResourceManager
     /*!
      * \brief Contains the processes that have a printer as acquired.
      */
-    std::set<Process*> _printerAllocation;
+//    std::set<Process*> _printerAllocation;
+
+    std::map<Process*, ProcessStatus> _printerAllocation;
 
     /*!
      * \brief Contains the SATA drives that have a printer as acquired.
      */
-    std::set<Process*> _driveAllocation;
+//    std::set<Process*> _driveAllocation;
+
+    std::map<Process*, ProcessStatus> _driveAllocation;
 
     /*!
      * \brief Contains the processes that have a scanner as acquired.
      */
-    std::set<Process*> _scannerAllocation;
+//    std::set<Process*> _scannerAllocation;
+
+    std::map<Process*, ProcessStatus> _scannerAllocation;
 
     /*!
      * \brief Contains the processes that have a modem as acquired.
      */
-    std::set<Process*> _modemAllocation;
+//    std::set<Process*> _modemAllocation;
+
+    std::map<Process*, ProcessStatus> _modemAllocation;
 
     /*!
      * \brief The queue of processes to acquire a printer.
@@ -92,7 +107,7 @@ class ResourceManager
      * \param process The process that wants to acquire the resource.
      * \return \c true if the resource could be acquired, or \c false otherwise.
      */
-    bool _acquire(unsigned int quant, std::set<Process*> &alloc, std::queue<Process*> &waitQueue, Process *process);
+    bool _acquire(int quant, std::map<Process *, ProcessStatus> &alloc, std::queue<Process*> &waitQueue, Process *process);
 
     /*!
      * \brief Releases a resource.
@@ -105,7 +120,7 @@ class ResourceManager
      * If this method is called when \c process doesn't have the resource acquired, then this method doesn't have any
      * effects, and \c nullptr is returned.
      */
-    Process* _release(std::set<Process*> &alloc, std::queue<Process*> &waitQueue, Process *process);
+    Process* _release(std::map<Process *, ProcessStatus> &alloc, std::queue<Process*> &waitQueue, Process *process);
 
 public:
     /*!

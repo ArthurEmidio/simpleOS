@@ -2,7 +2,7 @@
 
 #include "processmanager.h"
 
-ProcessManager::ProcessManager() : _queuesQuant(4)
+ProcessManager::ProcessManager()
 {
     _processQueues.resize(_queuesQuant);
 }

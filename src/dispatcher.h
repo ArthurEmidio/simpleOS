@@ -41,6 +41,11 @@ class Dispatcher
     bool _canRun(Process *process, MemoryManager &memoryManager, ResourceManager &resourceManager);
 
     /*!
+     * \brief Simulates CPU executing process.
+     */
+    void _sendToCPU(Process*);
+
+    /*!
      * \brief Holds the quantum.
      */
     const int _quantum;
@@ -56,11 +61,6 @@ public:
      * \brief Executes the OS.
      */
     void run();
-
-    /*!
-     * \brief Simulates CPU executing process.
-     */
-    void sendToCPU(Process*);
 
 };
 

@@ -55,6 +55,9 @@ void Dispatcher::run()
             for (i = 0; i < processManager.getTotal() && !currProcess; i++) {
                 currProcess = processManager.getNextProcess();
                 if (!_canRun(currProcess, memoryManager, resourceManager)) {
+                    // If it cannot run, free memory and resources to avoid deadlock.
+                    resourceManager.releaseAll(currProcess);
+                    memoryManager.deallocateMemory(currProcess);
                     currProcess = nullptr;
                 }
             }
@@ -65,15 +68,15 @@ void Dispatcher::run()
             }
         }
 
-        sendToCPU(currProcess);
+        _sendToCPU(currProcess);
 
-        if (currProcess->getProcessingTime() <= 0) {
+        if (currProcess->getProcessingTime() <= 0) { // finished execution
             resourceManager.releaseAll(currProcess);
             memoryManager.deallocateMemory(currProcess);
             delete currProcess;
             currProcess = nullptr;
-        } else if (currProcess->getPriority() > 0) {
-            processManager.reinsertProcess(currProcess); // preemption
+        } else if (currProcess->getPriority() > 0) { // preemption for user processes
+            processManager.reinsertProcess(currProcess);
             currProcess = nullptr;
         }
 
@@ -83,7 +86,7 @@ void Dispatcher::run()
     }
 }
 
-void Dispatcher::sendToCPU(Process *process)
+void Dispatcher::_sendToCPU(Process *process)
 {
     process->setProcessingTime(process->getProcessingTime() - _quantum);
     std::cout << "--- Processo na CPU: ---" << std::endl;

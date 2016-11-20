@@ -33,7 +33,7 @@ bool ResourceManager::acquireAll(Process *process)
     return true;
 }
 
-bool ResourceManager::_acquire(unsigned int quant, std::set<Process*> &alloc, std::queue<Process*> &waitQueue,
+bool ResourceManager::_acquire(int quant, std::map<Process*, ProcessStatus> &alloc, std::queue<Process*> &waitQueue,
                                Process *process)
 {
     if (alloc.count(process) > 0) {
@@ -41,7 +41,7 @@ bool ResourceManager::_acquire(unsigned int quant, std::set<Process*> &alloc, st
     }
 
     if (alloc.size() < quant) {
-        alloc.insert(process);
+        alloc[process] = ProcessStatus::IN_QUEUE;
         return true;
     }
 
@@ -74,7 +74,8 @@ void ResourceManager::releaseAll(Process *process)
     if (process->didRequestPrinter()) release(ResourceType::PRINTER, process);
 }
 
-Process* ResourceManager::_release(std::set<Process*> &alloc, std::queue<Process*> &waitQueue, Process *process)
+Process* ResourceManager::_release(std::map<Process*, ProcessStatus> &alloc, std::queue<Process*> &waitQueue,
+                                   Process *process)
 {
     if (alloc.count(process) == 0) {
         return nullptr;
@@ -84,7 +85,7 @@ Process* ResourceManager::_release(std::set<Process*> &alloc, std::queue<Process
     if (!waitQueue.empty()) {
         Process *nextProcess = waitQueue.front();
         waitQueue.pop();
-        alloc.insert(nextProcess);
+        alloc[nextProcess] = ProcessStatus::IN_QUEUE;
         return nextProcess;
     }
 
