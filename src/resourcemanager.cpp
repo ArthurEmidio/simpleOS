@@ -33,7 +33,6 @@ bool ResourceManager::acquireAll(Process *process)
     return true;
 }
 
-
 bool ResourceManager::_acquire(unsigned int quant, std::set<Process*> &alloc, std::queue<Process*> &waitQueue,
                                Process *process)
 {

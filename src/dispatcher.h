@@ -38,15 +38,12 @@ class Dispatcher
      */
     std::pair<int, std::vector<Process*>> _getNextProcesses();
 
+    bool _canRun(Process *process, MemoryManager &memoryManager, ResourceManager &resourceManager);
+
     /*!
      * \brief Holds the quantum.
      */
     const int _quantum;
-
-    /*!
-     * \brief Holds the current timestamp.
-     */
-    int _currentTimestamp;
 
 public:
     /*!
@@ -63,7 +60,7 @@ public:
     /*!
      * \brief Simulates CPU executing process.
      */
-    void toCPU(Process*);
+    void sendToCPU(Process*);
 
 };
 
