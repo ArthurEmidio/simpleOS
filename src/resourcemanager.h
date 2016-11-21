@@ -2,10 +2,10 @@
 #define RESOURCEMANEGER_H
 
 #include "process.h"
+#include "memorymanager.h"
 
+#include <deque>
 #include <map>
-#include <set>
-#include <queue>
 
 /*!
  * \brief The \c ResourceType enum lists all distinct types of resources.
@@ -22,6 +22,9 @@ enum class ResourceType
  * \brief The \c ResourceManager class is responsible for managing all the resources of the operating system.
  *
  * Currently, there are four types of resources: printer, SATA drive, scanner, and modem.
+ *
+ * Each resource has an internal waiting queue of processes that cannot obtain the resource. When a resource is
+ * released, the manager attempts to release an item from the queue, following the queue order.
  */
 class ResourceManager
 {
@@ -29,6 +32,15 @@ class ResourceManager
     {
         IN_QUEUE,
         WITH_RESOURCE
+    };
+
+    struct ResourceInfo
+    {
+        int capacity;
+        int allocated;
+        std::map<Process*, ProcessStatus> allocTable;
+        std::deque<Process*> queue;
+        ResourceInfo(int _capacity = 0) : capacity(_capacity) {}
     };
 
     /*!
@@ -52,75 +64,38 @@ class ResourceManager
     const int _modemQuantity = 1;
 
     /*!
-     * \brief Contains the processes that have a printer as acquired.
+     * \brief Maps the resource type with its information.
      */
-//    std::set<Process*> _printerAllocation;
-
-    std::map<Process*, ProcessStatus> _printerAllocation;
+    std::map<ResourceType, ResourceInfo> _resources;
 
     /*!
-     * \brief Contains the SATA drives that have a printer as acquired.
+     * \brief Acquires a resource.
+     * \param resourceType The resource type.
+     * \param process The process that wil acquire the resource.
      */
-//    std::set<Process*> _driveAllocation;
-
-    std::map<Process*, ProcessStatus> _driveAllocation;
-
-    /*!
-     * \brief Contains the processes that have a scanner as acquired.
-     */
-//    std::set<Process*> _scannerAllocation;
-
-    std::map<Process*, ProcessStatus> _scannerAllocation;
-
-    /*!
-     * \brief Contains the processes that have a modem as acquired.
-     */
-//    std::set<Process*> _modemAllocation;
-
-    std::map<Process*, ProcessStatus> _modemAllocation;
-
-    /*!
-     * \brief The queue of processes to acquire a printer.
-     */
-    std::queue<Process*> _printerQueue;
-
-    /*!
-     * \brief The queue of processes to acquire a SATA drive.
-     */
-    std::queue<Process*> _driveQueue;
-
-    /*!
-     * \brief The queue of processes to acquire a scanner.
-     */
-    std::queue<Process*> _scannerQueue;
-
-    /*!
-     * \brief The queue of processes to acquire a modem.
-     */
-    std::queue<Process*> _modemQueue;
-
-    /*!
-     * \brief Attemps to acquire a resource.
-     * \param quant How many resources of such type exist.
-     * \param alloc The allocation set for the specific resource (e.g. \c printerAllocation for printers).
-     * \param waitQueue The queue of processes to acquire the specific resource.
-     * \param process The process that wants to acquire the resource.
-     * \return \c true if the resource could be acquired, or \c false otherwise.
-     */
-    bool _acquire(int quant, std::map<Process *, ProcessStatus> &alloc, std::queue<Process*> &waitQueue, Process *process);
+    void _acquire(ResourceType resourceType, Process *process);
 
     /*!
      * \brief Releases a resource.
-     * \param alloc The allocation set for the specific resource (e.g. \c printerAllocation for printers).
-     * \param waitQueue The queue of processes to acquire the specific resource.
-     * \param process The process that wants to release the resource.
-     * \return The enqueued process that was allocated for this resource after \c process released the resource. If
-     * there is none, \c nullptr is returned.
-     *
-     * If this method is called when \c process doesn't have the resource acquired, then this method doesn't have any
-     * effects, and \c nullptr is returned.
+     * \param resourceType The resource type.
+     * \param process The process which will release the resource.
+     * \param memoryManager The memory manager.
      */
-    Process* _release(std::map<Process *, ProcessStatus> &alloc, std::queue<Process*> &waitQueue, Process *process);
+    void _release(ResourceType resourceType, Process *process, MemoryManager &memoryManager);
+
+    /*!
+     * \brief Gets whether the resource is free.
+     * \param resourceType The resource type.
+     * \return \c true if the resource can be acquired, or \c false otherwise.
+     */
+    bool _canAcquire(ResourceType resourceType);
+
+    /*!
+     * \brief Adds a process to the waiting queue of the given resource.
+     * \param resourceType The resource type.
+     * \param process The process to be enqueued.
+     */
+    void _addToQueue(ResourceType resourceType, Process *process);
 
 public:
     /*!
@@ -129,35 +104,25 @@ public:
     ResourceManager();
 
     /*!
-     * \brief Attemps to acquire a resource.
-     * \param resourceType The resource type.
-     * \param process The process that wants to acquire the resource.
-     * \return \c true if the resource could be acquired, or \c false otherwise.
-     */
-    bool acquire(ResourceType resourceType, Process *process);
-
-    /*!
      * \brief Attemps to acquire all resources at once.
      * \param process The process that wants to acquire the resource.
      * \return \c true if the resources could be acquired, or \c false otherwise.
+     *
+     * In case \c false is returned, this method does not acquire any resources.
      */
     bool acquireAll(Process *process);
 
     /*!
-     * \brief Attemps to release a resource.
-     * \param resourceType The resource type.
-     * \param process The process that wants to release the resource.
-     * \return \c true if the process released the resource. This method can return \c false in case the process
-     * doesn't didn't have the resource as acquired.
+     * \brief Releases all resources from a given process.
+     *
+     * If there are processes in the queue of any freed resource, this method attempts to allocate all resources
+     * for each process, following the queue order.
+     * \param process The process will have its resources released.
+     * \param memoryManager The memory manager. The manager is necessary because this methods tries to allocate
+     * procceses in the queue of the freed resource. However, this is only attempted if the process is allocated
+     * in memory.
      */
-    bool release(ResourceType resourceType, Process *process);
-
-    /*!
-     * \brief Attemps to release all resource.
-     * \param process The process that wants to release the resource.
-     */
-    void releaseAll(Process *process);
-
+    void releaseAll(Process *process, MemoryManager &memoryManager);
 };
 
 #endif // RESOURCEMANEGER_H

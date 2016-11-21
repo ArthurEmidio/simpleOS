@@ -56,7 +56,7 @@ void Dispatcher::run()
                 currProcess = processManager.getNextProcess();
                 if (!_canRun(currProcess, memoryManager, resourceManager)) {
                     // If it cannot run, free memory and resources to avoid deadlock.
-                    resourceManager.releaseAll(currProcess);
+                    resourceManager.releaseAll(currProcess, memoryManager);
                     memoryManager.deallocateMemory(currProcess);
                     currProcess = nullptr;
                 }
@@ -71,8 +71,8 @@ void Dispatcher::run()
         _sendToCPU(currProcess);
 
         if (currProcess->getProcessingTime() <= 0) { // finished execution
-            resourceManager.releaseAll(currProcess);
             memoryManager.deallocateMemory(currProcess);
+            resourceManager.releaseAll(currProcess, memoryManager);
             delete currProcess;
             currProcess = nullptr;
         } else if (currProcess->getPriority() > 0) { // preemption for user processes

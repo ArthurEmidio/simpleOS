@@ -2,92 +2,89 @@
 
 ResourceManager::ResourceManager()
 {
+    _resources[ResourceType::MODEM] = ResourceInfo(_modemQuantity);
+    _resources[ResourceType::SCANNER] = ResourceInfo(_scannerQuantity);
+    _resources[ResourceType::DRIVE] = ResourceInfo(_driveQuantity);
+    _resources[ResourceType::PRINTER] = ResourceInfo(_printerQuantity);
 }
 
-bool ResourceManager::acquire(ResourceType resourceType, Process *process)
+bool ResourceManager::_canAcquire(ResourceType resourceType)
 {
-    switch (resourceType) {
-        case ResourceType::PRINTER:
-            return _acquire(_printerQuantity, _printerAllocation, _printerQueue, process);
-        case ResourceType::DRIVE:
-            return _acquire(_driveQuantity, _driveAllocation, _driveQueue, process);
-        case ResourceType::SCANNER:
-            return _acquire(_scannerQuantity, _scannerAllocation, _scannerQueue, process);
-        case ResourceType::MODEM:
-            return _acquire(_modemQuantity, _modemAllocation, _modemQueue, process);
-    }
+    ResourceInfo &info = _resources[resourceType];
+    return info.allocated < info.capacity;
+}
 
-    return false;
+void ResourceManager::_acquire(ResourceType resourceType, Process *process)
+{
+    ResourceInfo &info = _resources[resourceType];
+    info.allocated++;
+    info.allocTable[process] = ProcessStatus::WITH_RESOURCE;
+}
+
+void ResourceManager::_addToQueue(ResourceType resourceType, Process *process)
+{
+    ResourceInfo &info = _resources[resourceType];
+    if (info.allocTable.count(process) == 0) {
+        info.allocTable[process] = ProcessStatus::IN_QUEUE;
+        info.queue.push_back(process);
+    }
 }
 
 bool ResourceManager::acquireAll(Process *process)
 {
-    if ((process->didRequestModem() && !acquire(ResourceType::MODEM, process)) ||
-        (process->didRequestScanner() && !acquire(ResourceType::SCANNER, process)) ||
-        (process->didRequestDrive() && !acquire(ResourceType::DRIVE, process)) ||
-        (process->didRequestPrinter() && !acquire(ResourceType::PRINTER, process))) {
-        releaseAll(process);
-        return false;
+    bool canAcquire = !((process->didRequestModem() && !_canAcquire(ResourceType::MODEM)) ||
+                        (process->didRequestScanner() && !_canAcquire(ResourceType::SCANNER)) ||
+                        (process->didRequestDrive() && !_canAcquire(ResourceType::DRIVE)) ||
+                        (process->didRequestPrinter() && !_canAcquire(ResourceType::PRINTER)));
+
+    if (canAcquire) {
+        if (process->didRequestModem()) _acquire(ResourceType::MODEM, process);
+        if (process->didRequestScanner()) _acquire(ResourceType::SCANNER, process);
+        if (process->didRequestDrive()) _acquire(ResourceType::DRIVE, process);
+        if (process->didRequestPrinter()) _acquire(ResourceType::PRINTER, process);
+    } else {
+        if (process->didRequestModem()) _addToQueue(ResourceType::MODEM, process);
+        if (process->didRequestScanner()) _addToQueue(ResourceType::SCANNER, process);
+        if (process->didRequestDrive()) _addToQueue(ResourceType::DRIVE, process);
+        if (process->didRequestPrinter()) _addToQueue(ResourceType::PRINTER, process);
     }
 
-    return true;
+    return canAcquire;
 }
 
-bool ResourceManager::_acquire(int quant, std::map<Process*, ProcessStatus> &alloc, std::queue<Process*> &waitQueue,
-                               Process *process)
+void ResourceManager::_release(ResourceType resourceType, Process *process, MemoryManager &memoryManager)
 {
-    if (alloc.count(process) > 0) {
-        return true; // when the process already has the resource
-    }
+    ResourceInfo &info = _resources[resourceType];
 
-    if (alloc.size() < quant) {
-        alloc[process] = ProcessStatus::IN_QUEUE;
-        return true;
-    }
+    std::map<Process*, ProcessStatus> &allocTable = info.allocTable;
+    if (allocTable.count(process) && allocTable[process] == ProcessStatus::WITH_RESOURCE) {
+        info.allocated--;
+        allocTable.erase(process);
 
-    // the resource is full
-    waitQueue.push(process);
-    return false;
+        // iterate queue until a process can be allocated.
+        std::deque<Process*> &queue = info.queue;
+        auto it = queue.begin();
+        while (it != queue.end()) {
+            if (allocTable.count(*it) > 0 && allocTable[*it] == ProcessStatus::IN_QUEUE) {
+                if (memoryManager.allocateMemory(process) && acquireAll(*it)) {
+                    queue.erase(it); // found a process
+                    break;
+                } else {
+                    memoryManager.deallocateMemory(process);
+                }
+            } else if (allocTable.count(*it) == 0 || allocTable[*it] == ProcessStatus::WITH_RESOURCE) {
+                it = queue.erase(it); // remove old processes
+            } else {
+                it++;
+            }
+        }
+    }
 }
 
-bool ResourceManager::release(ResourceType resourceType, Process *process)
+void ResourceManager::releaseAll(Process *process, MemoryManager &memoryManager)
 {
-    switch (resourceType) {
-        case ResourceType::PRINTER:
-            return _release(_printerAllocation, _printerQueue, process) ? true: false;
-        case ResourceType::DRIVE:
-            return _release(_driveAllocation, _driveQueue, process) ? true: false;
-        case ResourceType::SCANNER:
-            return _release(_scannerAllocation, _scannerQueue, process) ? true: false;
-        case ResourceType::MODEM:
-            return _release(_modemAllocation, _modemQueue, process) ? true: false;
-    }
-
-    return false;
-}
-
-void ResourceManager::releaseAll(Process *process)
-{
-    if (process->didRequestModem()) release(ResourceType::MODEM, process);
-    if (process->didRequestScanner()) release(ResourceType::SCANNER, process);
-    if (process->didRequestDrive()) release(ResourceType::DRIVE, process);
-    if (process->didRequestPrinter()) release(ResourceType::PRINTER, process);
-}
-
-Process* ResourceManager::_release(std::map<Process*, ProcessStatus> &alloc, std::queue<Process*> &waitQueue,
-                                   Process *process)
-{
-    if (alloc.count(process) == 0) {
-        return nullptr;
-    }
-
-    alloc.erase(process);
-    if (!waitQueue.empty()) {
-        Process *nextProcess = waitQueue.front();
-        waitQueue.pop();
-        alloc[nextProcess] = ProcessStatus::IN_QUEUE;
-        return nextProcess;
-    }
-
-    return nullptr;
+    if (process->didRequestModem()) _release(ResourceType::MODEM, process, memoryManager);
+    if (process->didRequestScanner()) _release(ResourceType::SCANNER, process, memoryManager);
+    if (process->didRequestDrive()) _release(ResourceType::DRIVE, process, memoryManager);
+    if (process->didRequestPrinter()) _release(ResourceType::PRINTER, process, memoryManager);
 }
