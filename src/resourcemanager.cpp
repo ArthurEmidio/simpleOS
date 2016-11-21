@@ -14,13 +14,6 @@ bool ResourceManager::_canAcquire(ResourceType resourceType)
     return info.allocated < info.capacity;
 }
 
-void ResourceManager::_acquire(ResourceType resourceType, Process *process)
-{
-    ResourceInfo &info = _resources[resourceType];
-    info.allocated++;
-    info.allocTable[process] = ProcessStatus::WITH_RESOURCE;
-}
-
 void ResourceManager::_addToQueue(ResourceType resourceType, Process *process)
 {
     ResourceInfo &info = _resources[resourceType];
@@ -28,6 +21,13 @@ void ResourceManager::_addToQueue(ResourceType resourceType, Process *process)
         info.allocTable[process] = ProcessStatus::IN_QUEUE;
         info.queue.push_back(process);
     }
+}
+
+void ResourceManager::_acquire(ResourceType resourceType, Process *process)
+{
+    ResourceInfo &info = _resources[resourceType];
+    info.allocated++;
+    info.allocTable[process] = ProcessStatus::WITH_RESOURCE;
 }
 
 bool ResourceManager::acquireAll(Process *process)

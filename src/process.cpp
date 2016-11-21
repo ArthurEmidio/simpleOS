@@ -82,13 +82,13 @@ void Process::setProcessingTime(int processingTime)
 
 void Process::printProcess()
 {
-    printf("PID: %d\n", _pid);
-    printf("offset: %d\n", _memOffset);
-    printf("blocks: %d\n", _memoryBlocks);
-    printf("priority: %d\n", _priority);
-    printf("time: %d\n", _initTime);
-    printf("printers: %d\n", _requestedPrinter);
-    printf("scanners: %d\n", _requestedScanner);
-    printf("modems: %d\n", _requestedModem);
-    printf("drives: %d\n", _requestedDrive);
+    printf("\tPID: %d\n", _pid);
+    printf("\toffset: %d\n", _memOffset);
+    printf("\tblocks: %d\n", _memoryBlocks);
+    printf("\tpriority: %d\n", _priority);
+    printf("\ttime: %d\n", _initTime);
+    printf("\tprinters: %d\n", _requestedPrinter);
+    printf("\tscanners: %d\n", _requestedScanner);
+    printf("\tmodems: %d\n", _requestedModem);
+    printf("\tdrives: %d\n", _requestedDrive);
 }

@@ -9,6 +9,8 @@ MemoryManager::MemoryManager(int realTimeBlocks, int userBlocks) :
 
 bool MemoryManager::allocateMemory(Process *process)
 {
+    if (process->getMemoryOffset() != -1) return true;
+
     if (process->getPriority() == 0) {
         return _allocate(_realTimeSegment, process, 0);
     } else {

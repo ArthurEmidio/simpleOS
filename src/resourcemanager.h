@@ -28,19 +28,26 @@ enum class ResourceType
  */
 class ResourceManager
 {
+    /*!
+     * \brief The \c ProcessStatus enum contains the possible status that a process is considered in terms of a
+     * resource.
+     */
     enum ProcessStatus
     {
         IN_QUEUE,
         WITH_RESOURCE
     };
 
+    /*!
+     * \brief The \c ResourceInfo struct is an internal representation containing information about a resource type.
+     */
     struct ResourceInfo
     {
         int capacity;
         int allocated;
         std::map<Process*, ProcessStatus> allocTable;
         std::deque<Process*> queue;
-        ResourceInfo(int _capacity = 0) : capacity(_capacity) {}
+        ResourceInfo(int _capacity = 0) : capacity(_capacity), allocated(0) {}
     };
 
     /*!

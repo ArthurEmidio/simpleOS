@@ -30,6 +30,13 @@ bool Dispatcher::_canRun(Process *process, MemoryManager &memoryManager, Resourc
             (memoryManager.allocateMemory(process) && resourceManager.acquireAll(process));
 }
 
+void Dispatcher::_sendToCPU(Process *process)
+{
+    process->setProcessingTime(process->getProcessingTime() - _quantum);
+    std::cout << "--- Processo na CPU: ---" << std::endl;
+    process->printProcess();
+}
+
 void Dispatcher::run()
 {
     MemoryManager memoryManager;
@@ -47,10 +54,7 @@ void Dispatcher::run()
             nextProcesses = _getNextProcesses();
         }
 
-        std::cout << "--- Filas de processos: ---" << std::endl;
-        processManager.printQueues();
-
-        if (!currProcess) {
+        if (!currProcess && !processManager.isEmpty()) {
             int i;
             for (i = 0; i < processManager.getTotal() && !currProcess; i++) {
                 currProcess = processManager.getNextProcess();
@@ -68,27 +72,25 @@ void Dispatcher::run()
             }
         }
 
-        _sendToCPU(currProcess);
+        std::cout << "--- Filas de processos: ---" << std::endl;
+        processManager.printQueues();
 
-        if (currProcess->getProcessingTime() <= 0) { // finished execution
-            memoryManager.deallocateMemory(currProcess);
-            resourceManager.releaseAll(currProcess, memoryManager);
-            delete currProcess;
-            currProcess = nullptr;
-        } else if (currProcess->getPriority() > 0) { // preemption for user processes
-            processManager.reinsertProcess(currProcess);
-            currProcess = nullptr;
+        if (currProcess) {
+            _sendToCPU(currProcess);
+
+            if (currProcess->getProcessingTime() <= 0) { // finished execution
+                memoryManager.deallocateMemory(currProcess);
+                resourceManager.releaseAll(currProcess, memoryManager);
+                delete currProcess;
+                currProcess = nullptr;
+            } else if (currProcess->getPriority() > 0) { // preemption for user processes
+                processManager.reinsertProcess(currProcess);
+                currProcess = nullptr;
+            }
         }
 
         timestamp++;
 
         std::cout << "**********************************" << std::endl;
     }
-}
-
-void Dispatcher::_sendToCPU(Process *process)
-{
-    process->setProcessingTime(process->getProcessingTime() - _quantum);
-    std::cout << "--- Processo na CPU: ---" << std::endl;
-    process->printProcess();
 }
