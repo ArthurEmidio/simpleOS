@@ -1,6 +1,6 @@
 #include "dispatcher.h"
 
-Dispatcher::Dispatcher(std::vector<Process*> processes) : _quantum(2)
+Dispatcher::Dispatcher(std::vector<Process*> processes) : _quantum(1)
 {
     _futureProcesses = processes;
     sort(_futureProcesses.begin(), _futureProcesses.end(), [](Process *p1, Process *p2) {
@@ -55,10 +55,12 @@ void Dispatcher::run()
         }
 
         if (!currProcess && !processManager.isEmpty()) {
-            int i;
-            for (i = 0; i < processManager.getTotal() && !currProcess; i++) {
-                currProcess = processManager.getNextProcess();
-                if (!_canRun(currProcess, memoryManager, resourceManager)) {
+            for (auto it = processManager.begin(); it != processManager.end(); it++) {
+                currProcess = *it;
+                if (_canRun(currProcess, memoryManager, resourceManager)) {
+                    processManager.erase(it); // remove from queue
+                    break;
+                } else {
                     // If it cannot run, free memory and resources to avoid deadlock.
                     resourceManager.releaseAll(currProcess, memoryManager);
                     memoryManager.deallocateMemory(currProcess);
@@ -66,7 +68,7 @@ void Dispatcher::run()
                 }
             }
 
-            if (i == processManager.getTotal()) {
+            if (!currProcess) {
                 std::cout << "Deadlock!" << std::endl;
                 exit(1);
             }

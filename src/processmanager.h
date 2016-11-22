@@ -3,6 +3,7 @@
 
 #include <deque>
 #include <vector>
+#include <cstddef>
 
 #include "process.h"
 
@@ -24,6 +25,79 @@ class ProcessManager
     std::vector<std::deque<Process*>> _processQueues;
 
 public:
+    class iterator : public std::iterator<std::input_iterator_tag, Process*, ptrdiff_t, Process**, Process*>
+    {
+        friend class ProcessManager;
+
+        int currQueue;
+        std::vector<std::deque<Process*>> &queues;
+        std::deque<Process*>::iterator currIt;
+
+        explicit iterator(int _currQueue, std::vector<std::deque<Process*>> &_queues) :
+            currQueue(_currQueue), queues(_queues)
+        {
+            if (currQueue >= queues.size()) {
+                currIt = queues.back().end();
+            } else {
+                currIt = queues[currQueue].begin();
+                if (currIt == queues[currQueue].end()) ++(*this);
+            }
+        }
+
+    public:
+        iterator& operator++()
+        {
+            if (currQueue >= queues.size()) {
+                currIt = queues[currQueue - 1].end();
+            } else {
+                if (currIt != queues[currQueue].end()) currIt++;
+                while (currQueue < queues.size() - 1 && currIt == queues[currQueue].end()) {
+                    currIt = queues[++currQueue].begin();
+                }
+            }
+            return *this;
+        }
+
+        iterator operator++(int)
+        {
+            iterator ret = *this;
+            ++(*this);
+            return ret;
+        }
+
+        bool operator==(iterator other) const
+        {
+            return currIt == other.currIt;
+        }
+
+        bool operator!=(iterator other) const
+        {
+            return !(*this == other);
+        }
+
+        Process* operator*()
+        {
+            return *currIt;
+        }
+    };
+
+    iterator begin()
+    {
+        return iterator(0, _processQueues);
+    }
+
+    iterator end()
+    {
+        return iterator(_queuesQuant, _processQueues);
+    }
+
+    void erase(iterator it)
+    {
+        if (it != end()) {
+            it.queues[it.currQueue].erase(it.currIt);
+        }
+    }
+
     /*!
      * \brief Default constructor.
      */
@@ -45,7 +119,7 @@ public:
      * \brief Gets the next process and removes it from its queue.
      * \return The process. If there are no enqueued processes, \c nullptr is returned.
      */
-    Process *getNextProcess();
+//    Process *getNextProcess();
 
     /*!
      * \brief Gets the total number of enqueued processes.

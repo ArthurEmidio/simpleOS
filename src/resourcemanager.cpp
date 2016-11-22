@@ -1,4 +1,5 @@
 #include "resourcemanager.h"
+#include <cassert>
 
 ResourceManager::ResourceManager()
 {
@@ -8,9 +9,13 @@ ResourceManager::ResourceManager()
     _resources[ResourceType::PRINTER] = ResourceInfo(_printerQuantity);
 }
 
-bool ResourceManager::_canAcquire(ResourceType resourceType)
+bool ResourceManager::_canAcquire(ResourceType resourceType, Process *process)
 {
     ResourceInfo &info = _resources[resourceType];
+    if (info.allocTable.count(process) == 1 && info.allocTable[process] == ProcessStatus::WITH_RESOURCE) {
+        return true;
+    }
+
     return info.allocated < info.capacity;
 }
 
@@ -26,16 +31,18 @@ void ResourceManager::_addToQueue(ResourceType resourceType, Process *process)
 void ResourceManager::_acquire(ResourceType resourceType, Process *process)
 {
     ResourceInfo &info = _resources[resourceType];
-    info.allocated++;
-    info.allocTable[process] = ProcessStatus::WITH_RESOURCE;
+    if (info.allocTable.count(process) == 0 || info.allocTable[process] == ProcessStatus::IN_QUEUE) {
+        info.allocated++;
+        info.allocTable[process] = ProcessStatus::WITH_RESOURCE;
+    }
 }
 
 bool ResourceManager::acquireAll(Process *process)
 {
-    bool canAcquire = !((process->didRequestModem() && !_canAcquire(ResourceType::MODEM)) ||
-                        (process->didRequestScanner() && !_canAcquire(ResourceType::SCANNER)) ||
-                        (process->didRequestDrive() && !_canAcquire(ResourceType::DRIVE)) ||
-                        (process->didRequestPrinter() && !_canAcquire(ResourceType::PRINTER)));
+    bool canAcquire = !((process->didRequestModem() && !_canAcquire(ResourceType::MODEM, process)) ||
+                        (process->didRequestScanner() && !_canAcquire(ResourceType::SCANNER, process)) ||
+                        (process->didRequestDrive() && !_canAcquire(ResourceType::DRIVE, process)) ||
+                        (process->didRequestPrinter() && !_canAcquire(ResourceType::PRINTER, process)));
 
     if (canAcquire) {
         if (process->didRequestModem()) _acquire(ResourceType::MODEM, process);
@@ -67,10 +74,11 @@ void ResourceManager::_release(ResourceType resourceType, Process *process, Memo
         while (it != queue.end()) {
             if (allocTable.count(*it) > 0 && allocTable[*it] == ProcessStatus::IN_QUEUE) {
                 if (memoryManager.allocateMemory(process) && acquireAll(*it)) {
-                    queue.erase(it); // found a process
+                    queue.erase(it); // found a process to be allocated
                     break;
                 } else {
                     memoryManager.deallocateMemory(process);
+                    it++;
                 }
             } else if (allocTable.count(*it) == 0 || allocTable[*it] == ProcessStatus::WITH_RESOURCE) {
                 it = queue.erase(it); // remove old processes

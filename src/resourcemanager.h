@@ -93,9 +93,10 @@ class ResourceManager
     /*!
      * \brief Gets whether the resource is free.
      * \param resourceType The resource type.
+     * \param process The process that wants to acquire the resource.
      * \return \c true if the resource can be acquired, or \c false otherwise.
      */
-    bool _canAcquire(ResourceType resourceType);
+    bool _canAcquire(ResourceType resourceType, Process *process);
 
     /*!
      * \brief Adds a process to the waiting queue of the given resource.

@@ -1,3 +1,5 @@
+#include <cstdio>
+
 #include "process.h"
 
 Process::Process(int initTime, int priority, int processingTime, int memoryBlocks,
@@ -86,7 +88,8 @@ void Process::printProcess()
     printf("\toffset: %d\n", _memOffset);
     printf("\tblocks: %d\n", _memoryBlocks);
     printf("\tpriority: %d\n", _priority);
-    printf("\ttime: %d\n", _initTime);
+    printf("\tinit time: %d\n", _initTime);
+    printf("\ttime left: %d\n", _processingTime);
     printf("\tprinters: %d\n", _requestedPrinter);
     printf("\tscanners: %d\n", _requestedScanner);
     printf("\tmodems: %d\n", _requestedModem);
