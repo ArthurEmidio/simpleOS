@@ -22,20 +22,6 @@ void ProcessManager::reinsertProcess(Process *process)
     _processQueues[process->getPriority()].push_back(process);
 }
 
-//Process* ProcessManager::getNextProcess()
-//{
-//    Process *nextProcess = nullptr;
-//    for (std::deque<Process*> &queue : _processQueues) {
-//        if (!queue.empty()) {
-//            nextProcess = queue.front();
-//            queue.pop_front();
-//            break;
-//        }
-//    }
-
-//    return nextProcess;
-//}
-
 int ProcessManager::getTotal() const
 {
     int total = 0;

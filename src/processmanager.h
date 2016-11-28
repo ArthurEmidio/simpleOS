@@ -116,12 +116,6 @@ public:
     void reinsertProcess(Process *process);
 
     /*!
-     * \brief Gets the next process and removes it from its queue.
-     * \return The process. If there are no enqueued processes, \c nullptr is returned.
-     */
-//    Process *getNextProcess();
-
-    /*!
      * \brief Gets the total number of enqueued processes.
      * \return The number of enqueued processes.
      */
