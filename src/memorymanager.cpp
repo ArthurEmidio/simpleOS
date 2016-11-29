@@ -4,7 +4,31 @@ MemoryManager::MemoryManager(int realTimeBlocks, int userBlocks) :
     _realTimeBlocks(realTimeBlocks), _userBlocks(userBlocks)
 {
     _realTimeSegment.push_back(MemorySet(0, realTimeBlocks));
-    _userSegment.push_back(MemorySet(0, userBlocks));
+    _userSegment.push_back(MemorySet(realTimeBlocks, userBlocks));
+}
+
+bool MemoryManager::_canAllocate(std::list<MemorySet> &segment, Process *process)
+{
+    int blocks = process->getMemoryBlocks();
+
+    for (auto it = segment.begin(); it != segment.end(); it++) {
+        MemorySet &memorySet = *it;
+        if (memorySet.process == nullptr && memorySet.blocks >= blocks) {
+            return true;
+        }
+    }
+    return false;
+}
+
+bool MemoryManager::canAllocate(Process *process)
+{
+    if (process->getMemoryOffset() != -1) return true;
+
+    if (process->getPriority() == 0) {
+        return _canAllocate(_realTimeSegment, process);
+    } else {
+        return _canAllocate(_userSegment, process);
+    }
 }
 
 bool MemoryManager::allocateMemory(Process *process)
@@ -12,13 +36,13 @@ bool MemoryManager::allocateMemory(Process *process)
     if (process->getMemoryOffset() != -1) return true;
 
     if (process->getPriority() == 0) {
-        return _allocate(_realTimeSegment, process, 0);
+        return _allocate(_realTimeSegment, process);
     } else {
-        return _allocate(_userSegment, process, _realTimeBlocks);
+        return _allocate(_userSegment, process);
     }
 }
 
-bool MemoryManager::_allocate(std::list<MemorySet> &segment, Process *process, int baseOffset)
+bool MemoryManager::_allocate(std::list<MemorySet> &segment, Process *process)
 {
     int blocks = process->getMemoryBlocks();
 
@@ -26,13 +50,13 @@ bool MemoryManager::_allocate(std::list<MemorySet> &segment, Process *process, i
         MemorySet &memorySet = *it;
         if (memorySet.process == nullptr && memorySet.blocks >= blocks) {
             if (blocks + 1 < memorySet.blocks) {
-                MemorySet newMemSet(memorySet.offset + memorySet.blocks, memorySet.blocks - blocks, nullptr);
-                segment.insert(next(it), newMemSet);
+                MemorySet newMemSet(memorySet.offset + blocks, memorySet.blocks - blocks, nullptr);
+                segment.insert(std::next(it), newMemSet);
             }
 
             memorySet.blocks = blocks;
             memorySet.process = process;
-            process->setMemoryOffset(memorySet.offset + baseOffset);
+            process->setMemoryOffset(memorySet.offset);
             return true;
         }
     }

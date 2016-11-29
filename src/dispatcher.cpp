@@ -26,8 +26,7 @@ std::pair<int, std::vector<Process*>> Dispatcher::_getNextProcesses()
 
 bool Dispatcher::_canRun(Process *process, MemoryManager &memoryManager, ResourceManager &resourceManager)
 {
-    return process->getMemoryOffset() != -1 ||
-            (memoryManager.allocateMemory(process) && resourceManager.acquireAll(process));
+    return memoryManager.canAllocate(process) && resourceManager.canAcquire(process);
 }
 
 void Dispatcher::_sendToCPU(Process *process)
@@ -58,12 +57,11 @@ void Dispatcher::run()
             for (auto it = processManager.begin(); it != processManager.end(); it++) {
                 currProcess = *it;
                 if (_canRun(currProcess, memoryManager, resourceManager)) {
+                    memoryManager.allocateMemory(currProcess);
+                    resourceManager.acquireAll(currProcess);
                     processManager.erase(it); // remove from queue
                     break;
                 } else {
-                    // If it cannot run, free memory and resources to avoid deadlock.
-                    resourceManager.releaseAll(currProcess, memoryManager);
-                    memoryManager.deallocateMemory(currProcess);
                     currProcess = nullptr;
                 }
             }

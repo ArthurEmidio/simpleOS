@@ -131,6 +131,8 @@ public:
      * in memory.
      */
     void releaseAll(Process *process, MemoryManager &memoryManager);
+
+    bool canAcquire(Process *process);
 };
 
 #endif // RESOURCEMANEGER_H

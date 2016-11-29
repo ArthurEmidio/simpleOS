@@ -37,14 +37,19 @@ void ResourceManager::_acquire(ResourceType resourceType, Process *process)
     }
 }
 
+bool ResourceManager::canAcquire(Process *process)
+{
+    return !((process->didRequestModem() && !_canAcquire(ResourceType::MODEM, process)) ||
+             (process->didRequestScanner() && !_canAcquire(ResourceType::SCANNER, process)) ||
+             (process->didRequestDrive() && !_canAcquire(ResourceType::DRIVE, process)) ||
+             (process->didRequestPrinter() && !_canAcquire(ResourceType::PRINTER, process)));
+}
+
 bool ResourceManager::acquireAll(Process *process)
 {
-    bool canAcquire = !((process->didRequestModem() && !_canAcquire(ResourceType::MODEM, process)) ||
-                        (process->didRequestScanner() && !_canAcquire(ResourceType::SCANNER, process)) ||
-                        (process->didRequestDrive() && !_canAcquire(ResourceType::DRIVE, process)) ||
-                        (process->didRequestPrinter() && !_canAcquire(ResourceType::PRINTER, process)));
+    bool success = canAcquire(process);
 
-    if (canAcquire) {
+    if (success) {
         if (process->didRequestModem()) _acquire(ResourceType::MODEM, process);
         if (process->didRequestScanner()) _acquire(ResourceType::SCANNER, process);
         if (process->didRequestDrive()) _acquire(ResourceType::DRIVE, process);
@@ -56,7 +61,7 @@ bool ResourceManager::acquireAll(Process *process)
         if (process->didRequestPrinter()) _addToQueue(ResourceType::PRINTER, process);
     }
 
-    return canAcquire;
+    return success;
 }
 
 void ResourceManager::_release(ResourceType resourceType, Process *process, MemoryManager &memoryManager)
@@ -72,19 +77,12 @@ void ResourceManager::_release(ResourceType resourceType, Process *process, Memo
         std::deque<Process*> &queue = info.queue;
         auto it = queue.begin();
         while (it != queue.end()) {
-            if (allocTable.count(*it) > 0 && allocTable[*it] == ProcessStatus::IN_QUEUE) {
-                if (memoryManager.allocateMemory(process) && acquireAll(*it)) {
-                    queue.erase(it); // found a process to be allocated
-                    break;
-                } else {
-                    memoryManager.deallocateMemory(process);
-                    it++;
-                }
-            } else if (allocTable.count(*it) == 0 || allocTable[*it] == ProcessStatus::WITH_RESOURCE) {
-                it = queue.erase(it); // remove old processes
-            } else {
-                it++;
+            Process *queuedProcess = *it;
+            if (memoryManager.canAllocate(queuedProcess) && canAcquire(queuedProcess)) {
+                memoryManager.allocateMemory(queuedProcess);
+                acquireAll(queuedProcess);
             }
+            it++;
         }
     }
 }

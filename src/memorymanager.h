@@ -70,14 +70,15 @@ class MemoryManager
      */
     std::list<MemorySet> _realTimeSegment;
 
+    bool _canAllocate(std::list<MemorySet> &segment, Process *process);
+
     /*!
      * \brief Attempts to allocate a process in the given segment.
      * \param segment The segment (i.e. \c _userSegment or \c _realTimeSegment).
      * \param process The process to be allocated.
-     * \param baseOffset A base offset.
      * \return \c true if the process could be allocated, or \c false otherwise.
      */
-    bool _allocate(std::list<MemorySet> &segment, Process *process, int baseOffset = 0);
+    bool _allocate(std::list<MemorySet> &segment, Process *process);
 
     /*!
      * \brief Attempts to deallocate a process in the given segment.
@@ -110,6 +111,8 @@ public:
      * the process doesn't have allocated memory.
      */
     bool deallocateMemory(Process *process);
+
+    bool canAllocate(Process *process);
 
 };
 
