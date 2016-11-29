@@ -25,6 +25,10 @@ class ProcessManager
     std::vector<std::deque<Process*>> _processQueues;
 
 public:
+    /*!
+     * \brief The \c iterator class corresponds to a C++ iterator that allows to traverse the elements of the
+     * priority queues as if it was just one priority queue.
+     */
     class iterator : public std::iterator<std::input_iterator_tag, Process*, ptrdiff_t, Process**, Process*>
     {
         friend class ProcessManager;
@@ -81,22 +85,23 @@ public:
         }
     };
 
-    iterator begin()
-    {
-        return iterator(0, _processQueues);
-    }
+    /*!
+     * \brief Gets the terator to the process with the highest priority.
+     * \return The iterator to the process with the highest priority.
+     */
+    iterator begin();
 
-    iterator end()
-    {
-        return iterator(_queuesQuant, _processQueues);
-    }
+    /*!
+     * \brief Gets the iterator past the iterator corresponding to the process with lowest priority.
+     * \return The iterator past the iterator corresponding to the process with lowest priority.
+     */
+    iterator end();
 
-    void erase(iterator it)
-    {
-        if (it != end()) {
-            it.queues[it.currQueue].erase(it.currIt);
-        }
-    }
+    /*!
+     * \brief Erases the element corresponding to the given iterator from the priority queue that contains it.
+     * \param it The iterator corresponding to the element that should be removed.
+     */
+    void erase(iterator it);
 
     /*!
      * \brief Default constructor.

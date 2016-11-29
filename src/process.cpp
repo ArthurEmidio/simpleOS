@@ -4,12 +4,10 @@
 
 Process::Process(int initTime, int priority, int processingTime, int memoryBlocks,
         bool requestedPrinter, bool requestedDrive, bool requestedScanner, bool requestedModem) :
-        _initTime(initTime), _priority(priority), _processingTime(processingTime), _memoryBlocks(memoryBlocks),
-        _requestedPrinter(requestedPrinter), _requestedDrive(requestedDrive), _requestedScanner(requestedScanner),
-        _requestedModem(requestedModem)
+        _memOffset(-1), _pid(-1), _initTime(initTime), _priority(priority), _processingTime(processingTime),
+        _memoryBlocks(memoryBlocks), _requestedPrinter(requestedPrinter), _requestedDrive(requestedDrive),
+        _requestedScanner(requestedScanner), _requestedModem(requestedModem)
 {
-    _memOffset = -1;
-    _pid = -1;
 }
 
 int Process::getPid() const

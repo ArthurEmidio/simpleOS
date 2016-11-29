@@ -7,6 +7,23 @@ ProcessManager::ProcessManager()
     _processQueues.resize(_queuesQuant);
 }
 
+ProcessManager::iterator ProcessManager::begin()
+{
+    return iterator(0, _processQueues);
+}
+
+ProcessManager::iterator ProcessManager::end()
+{
+    return iterator(_queuesQuant, _processQueues);
+}
+
+void ProcessManager::erase(ProcessManager::iterator it)
+{
+    if (it != end()) {
+        it.queues[it.currQueue].erase(it.currIt);
+    }
+}
+
 void ProcessManager::insertProcesses(const std::vector<Process*> &processes)
 {
     for (Process *process : processes) {
