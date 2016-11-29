@@ -53,6 +53,10 @@ void Dispatcher::run()
             nextProcesses = _getNextProcesses();
         }
 
+        std::cout << "--- Filas de processos: ---" << std::endl;
+        processManager.printQueues();
+
+
         if (!currProcess && !processManager.isEmpty()) {
             for (auto it = processManager.begin(); it != processManager.end(); it++) {
                 currProcess = *it;
@@ -72,12 +76,12 @@ void Dispatcher::run()
             }
         }
 
-        std::cout << "--- Filas de processos: ---" << std::endl;
-        processManager.printQueues();
-
+        resourceManager.printResources();
         if (currProcess) {
+            char wait;
+            std::cin >> wait;
             _sendToCPU(currProcess);
-
+            std::cin >> wait;
             if (currProcess->getProcessingTime() <= 0) { // finished execution
                 memoryManager.deallocateMemory(currProcess);
                 resourceManager.releaseAll(currProcess, memoryManager);

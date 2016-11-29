@@ -4,8 +4,10 @@
 #include "process.h"
 #include "memorymanager.h"
 
+#include <cstdio>
 #include <deque>
 #include <map>
+
 
 /*!
  * \brief The \c ResourceType enum lists all distinct types of resources.
@@ -133,6 +135,10 @@ public:
     void releaseAll(Process *process, MemoryManager &memoryManager);
 
     bool canAcquire(Process *process);
+    /*!
+     * \brief Prints which resource is allocated to which process.
+     */
+    void printResources();
 };
 
 #endif // RESOURCEMANEGER_H

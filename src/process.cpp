@@ -83,7 +83,7 @@ void Process::setProcessingTime(int processingTime)
 void Process::printProcess()
 {
     printf("\tPID: %d\n", _pid);
-    printf("\toffset: %d\n", _memOffset);
+    (_memOffset == -1) ? printf("\toffset: NOT_IN_MEMORY\n") : printf("\toffset: %d\n", _memOffset);
     printf("\tblocks: %d\n", _memoryBlocks);
     printf("\tpriority: %d\n", _priority);
     printf("\tinit time: %d\n", _initTime);

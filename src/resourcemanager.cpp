@@ -94,3 +94,45 @@ void ResourceManager::releaseAll(Process *process, MemoryManager &memoryManager)
     if (process->didRequestDrive()) _release(ResourceType::DRIVE, process, memoryManager);
     if (process->didRequestPrinter()) _release(ResourceType::PRINTER, process, memoryManager);
 }
+
+void ResourceManager::printResources(){
+    ResourceInfo *info = &_resources[ResourceType::PRINTER];
+    printf("--- Filas de recursos: ---\n");
+    for(int i = 0; i < 4; i++){
+            switch(i){
+                case 0: printf(" - PRINTER\n"); break;
+                case 1: printf(" - DRIVE\n");
+                        info = &_resources[ResourceType::DRIVE];
+                        break;
+                case 2: printf(" - SCANNER\n");
+                        info = &_resources[ResourceType::SCANNER];
+                        break;
+                case 3: printf(" - MODEM\n");
+                        info = &_resources[ResourceType::MODEM];
+                        break;
+            }
+            printf("   - capacity: %d\n", info->capacity);
+            printf("   - process using: ");
+            for (auto it = info->allocTable.begin(); it != info->allocTable.end(); it++) {
+                if (WITH_RESOURCE == it->second)
+                    printf("PID %d", it->first->getPid());
+                    printf(" | ");
+            }
+            printf("\n");
+            printf("   - processes waiting: ");
+            for (auto it = info->allocTable.begin(); it != info->allocTable.end(); it++) {
+                if (IN_QUEUE == it->second)
+                    printf("PID %d", it->first->getPid());
+                    printf(" | ");
+            }
+            printf("\n");
+    }
+    printf("--------------------------\n");
+
+
+    //DRIVE
+    //SCANNER
+    //MODEM
+
+
+}

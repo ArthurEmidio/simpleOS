@@ -1,10 +1,10 @@
 # depslib dependency file v1.0
-1479140470 source:c:\users\thiag\documents\githubrep\simpleos\src\dispatcher.cpp
+1480434233 source:c:\users\thiag\documents\githubrep\simpleos\src\dispatcher.cpp
 	"dispatcher.h"
 
-1479139852 c:\users\thiag\documents\githubrep\simpleos\src\dispatcher.h
+1479783014 c:\users\thiag\documents\githubrep\simpleos\src\dispatcher.h
 	"process.h"
-	"ProcessManager.h"
+	"processmanager.h"
 	"memorymanager.h"
 	"resourcemanager.h"
 	<vector>
@@ -13,10 +13,10 @@
 	<algorithm>
 	<windows.h>
 
-1478964929 c:\users\thiag\documents\githubrep\simpleos\src\process.h
+1480426404 c:\users\thiag\documents\githubrep\simpleos\src\process.h
 	<iostream>
 
-1478958780 source:c:\users\thiag\documents\githubrep\simpleos\src\main.cpp
+1480426419 source:c:\users\thiag\documents\githubrep\simpleos\src\main.cpp
 	<fstream>
 	<iostream>
 	<string>
@@ -25,31 +25,39 @@
 	<queue>
 	"dispatcher.h"
 	"process.h"
+	"testprocessmanager.h"
 
-1478994899 source:c:\users\thiag\documents\githubrep\simpleos\src\memorymanager.cpp
+1479783014 source:c:\users\thiag\documents\githubrep\simpleos\src\memorymanager.cpp
 	"memorymanager.h"
 
-1478888208 c:\users\thiag\documents\githubrep\simpleos\src\memorymanager.h
+1479783014 c:\users\thiag\documents\githubrep\simpleos\src\memorymanager.h
 	"process.h"
 	<list>
 
-1478996272 source:c:\users\thiag\documents\githubrep\simpleos\src\process.cpp
+1480429835 source:c:\users\thiag\documents\githubrep\simpleos\src\process.cpp
+	<cstdio>
 	"process.h"
 
-1479140342 source:c:\users\thiag\documents\githubrep\simpleos\src\resourcemanager.cpp
+1480441604 source:c:\users\thiag\documents\githubrep\simpleos\src\resourcemanager.cpp
 	"resourcemanager.h"
+	<cassert>
 
-1479140003 c:\users\thiag\documents\githubrep\simpleos\src\resourcemanager.h
+1480434181 c:\users\thiag\documents\githubrep\simpleos\src\resourcemanager.h
 	"process.h"
-	<set>
-	<queue>
+	"memorymanager.h"
+	<cstdio>
+	<deque>
+	<map>
 
-1478964274 c:\users\thiag\documents\githubrep\simpleos\src\processmanager.h
+1480426419 c:\users\thiag\documents\githubrep\simpleos\src\processmanager.h
+	<deque>
 	<vector>
-	<queue>
-	<iostream>
+	<cstddef>
 	"process.h"
 
-1479131820 source:c:\users\thiag\documents\githubrep\simpleos\src\processmanager.cpp
-	"ProcessManager.h"
+1480426419 source:c:\users\thiag\documents\githubrep\simpleos\src\processmanager.cpp
+	<iostream>
+	"processmanager.h"
+
+1480426419 c:\users\thiag\documents\githubrep\simpleos\src\testprocessmanager.h
 
