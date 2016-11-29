@@ -1,5 +1,5 @@
 # depslib dependency file v1.0
-1480434233 source:c:\users\thiag\documents\githubrep\simpleos\src\dispatcher.cpp
+1480453786 source:c:\users\thiag\documents\githubrep\simpleos\src\dispatcher.cpp
 	"dispatcher.h"
 
 1479783014 c:\users\thiag\documents\githubrep\simpleos\src\dispatcher.h
@@ -27,22 +27,22 @@
 	"process.h"
 	"testprocessmanager.h"
 
-1479783014 source:c:\users\thiag\documents\githubrep\simpleos\src\memorymanager.cpp
+1480447257 source:c:\users\thiag\documents\githubrep\simpleos\src\memorymanager.cpp
 	"memorymanager.h"
 
-1479783014 c:\users\thiag\documents\githubrep\simpleos\src\memorymanager.h
+1480447257 c:\users\thiag\documents\githubrep\simpleos\src\memorymanager.h
 	"process.h"
 	<list>
 
-1480429835 source:c:\users\thiag\documents\githubrep\simpleos\src\process.cpp
+1480447273 source:c:\users\thiag\documents\githubrep\simpleos\src\process.cpp
 	<cstdio>
 	"process.h"
 
-1480441604 source:c:\users\thiag\documents\githubrep\simpleos\src\resourcemanager.cpp
+1480454997 source:c:\users\thiag\documents\githubrep\simpleos\src\resourcemanager.cpp
 	"resourcemanager.h"
 	<cassert>
 
-1480434181 c:\users\thiag\documents\githubrep\simpleos\src\resourcemanager.h
+1480447372 c:\users\thiag\documents\githubrep\simpleos\src\resourcemanager.h
 	"process.h"
 	"memorymanager.h"
 	<cstdio>
@@ -55,7 +55,7 @@
 	<cstddef>
 	"process.h"
 
-1480426419 source:c:\users\thiag\documents\githubrep\simpleos\src\processmanager.cpp
+1480450339 source:c:\users\thiag\documents\githubrep\simpleos\src\processmanager.cpp
 	<iostream>
 	"processmanager.h"
 

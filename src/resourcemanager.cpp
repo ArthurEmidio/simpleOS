@@ -15,6 +15,10 @@ bool ResourceManager::_canAcquire(ResourceType resourceType, Process *process)
     if (info.allocTable.count(process) == 1 && info.allocTable[process] == ProcessStatus::WITH_RESOURCE) {
         return true;
     }
+    else
+    {
+        info.allocTable[process] = ProcessStatus::IN_QUEUE;
+    }
 
     return info.allocated < info.capacity;
 }
@@ -39,10 +43,10 @@ void ResourceManager::_acquire(ResourceType resourceType, Process *process)
 
 bool ResourceManager::canAcquire(Process *process)
 {
-    return !((process->didRequestModem() && !_canAcquire(ResourceType::MODEM, process)) ||
-             (process->didRequestScanner() && !_canAcquire(ResourceType::SCANNER, process)) ||
-             (process->didRequestDrive() && !_canAcquire(ResourceType::DRIVE, process)) ||
-             (process->didRequestPrinter() && !_canAcquire(ResourceType::PRINTER, process)));
+    return !((process->didRequestModem()    && !_canAcquire(ResourceType::MODEM, process))     |
+             (process->didRequestScanner()  && !_canAcquire(ResourceType::SCANNER, process))   |
+             (process->didRequestDrive()    && !_canAcquire(ResourceType::DRIVE, process))     |
+             (process->didRequestPrinter()  && !_canAcquire(ResourceType::PRINTER, process)));
 }
 
 bool ResourceManager::acquireAll(Process *process)
@@ -114,25 +118,20 @@ void ResourceManager::printResources(){
             printf("   - capacity: %d\n", info->capacity);
             printf("   - process using: ");
             for (auto it = info->allocTable.begin(); it != info->allocTable.end(); it++) {
-                if (WITH_RESOURCE == it->second)
+                if (WITH_RESOURCE == it->second){
                     printf("PID %d", it->first->getPid());
                     printf(" | ");
+                }
             }
             printf("\n");
             printf("   - processes waiting: ");
             for (auto it = info->allocTable.begin(); it != info->allocTable.end(); it++) {
-                if (IN_QUEUE == it->second)
+                if (IN_QUEUE == it->second){
                     printf("PID %d", it->first->getPid());
                     printf(" | ");
+                }
             }
             printf("\n");
     }
     printf("--------------------------\n");
-
-
-    //DRIVE
-    //SCANNER
-    //MODEM
-
-
 }

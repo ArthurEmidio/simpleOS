@@ -55,6 +55,7 @@ bool ProcessManager::isEmpty() const
 
 void ProcessManager::printQueues()
 {
+    std::cout << "--- Filas de processos: ---" << std::endl;
     for (int i = 0; i < _processQueues.size(); i++) {
         std::cout << "Fila [" << i << "]:" << std::endl;
         for (int j = 0; j < _processQueues[i].size(); j++) {
@@ -63,4 +64,6 @@ void ProcessManager::printQueues()
             std::cout << " ---- " << std::endl;
         }
     }
+    std::cout << "---------------------------" << std::endl;
+
 }

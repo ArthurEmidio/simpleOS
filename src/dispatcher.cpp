@@ -34,6 +34,7 @@ void Dispatcher::_sendToCPU(Process *process)
     process->setProcessingTime(process->getProcessingTime() - _quantum);
     std::cout << "--- Processo na CPU: ---" << std::endl;
     process->printProcess();
+    std::cout << "------------------------" << std::endl;
 }
 
 void Dispatcher::run()
@@ -53,7 +54,6 @@ void Dispatcher::run()
             nextProcesses = _getNextProcesses();
         }
 
-        std::cout << "--- Filas de processos: ---" << std::endl;
         processManager.printQueues();
 
 
