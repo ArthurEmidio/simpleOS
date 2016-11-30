@@ -49,7 +49,7 @@ bool MemoryManager::_allocate(std::list<MemorySet> &segment, Process *process)
     for (auto it = segment.begin(); it != segment.end(); it++) {
         MemorySet &memorySet = *it;
         if (memorySet.process == nullptr && memorySet.blocks >= blocks) {
-            if (blocks + 1 < memorySet.blocks) {
+            if (blocks + 1 <= memorySet.blocks) {
                 MemorySet newMemSet(memorySet.offset + blocks, memorySet.blocks - blocks, nullptr);
                 segment.insert(std::next(it), newMemSet);
             }
@@ -112,7 +112,7 @@ void MemoryManager::printMemory(){
         printf("%d ", it->offset);
         if(it->process) printf("PID%d ", it->process->getPid());
         else printf("livre ");
-        printf("%d|", it->blocks + it->offset);
+        printf("%d|", it->blocks + it->offset - 1);
     }
     printf("\n");
     printf(" - UserSegment: ");
@@ -120,7 +120,7 @@ void MemoryManager::printMemory(){
         printf("%d ", it->offset);
         if(it->process) printf("PID%d ", it->process->getPid());
         else printf("livre ");
-        printf("%d|", it->blocks + it->offset);
+        printf("%d|", it->blocks + it->offset - 1);
     }
     printf("\n");
     printf("-----------------------");

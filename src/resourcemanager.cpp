@@ -39,10 +39,10 @@ void ResourceManager::_acquire(ResourceType resourceType, Process *process)
 
 bool ResourceManager::canAcquire(Process *process)
 {
-    bool result =  !((process->didRequestModem()    && !_canAcquire(ResourceType::MODEM, process))     ||
-                     (process->didRequestScanner()  && !_canAcquire(ResourceType::SCANNER, process))   ||
-                     (process->didRequestDrive()    && !_canAcquire(ResourceType::DRIVE, process))     ||
-                     (process->didRequestPrinter()  && !_canAcquire(ResourceType::PRINTER, process)));
+    bool result =  !((process->didRequestModem()   && !_canAcquire(ResourceType::MODEM, process))    ||
+                    (process->didRequestScanner()  && !_canAcquire(ResourceType::SCANNER, process))  ||
+                    (process->didRequestDrive()    && !_canAcquire(ResourceType::DRIVE, process))    ||
+                    (process->didRequestPrinter()  && !_canAcquire(ResourceType::PRINTER, process)));
 
     if (!result) {
         if (process->didRequestModem()) _addToQueue(ResourceType::MODEM, process);
