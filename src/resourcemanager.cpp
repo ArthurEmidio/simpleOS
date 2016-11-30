@@ -14,8 +14,6 @@ bool ResourceManager::_canAcquire(ResourceType resourceType, Process *process)
     ResourceInfo &info = _resources[resourceType];
     if (info.allocTable.count(process) == 1 && info.allocTable[process] == ProcessStatus::WITH_RESOURCE) {
         return true;
-    } else {
-        _addToQueue(resourceType, process);
     }
 
     return info.allocated < info.capacity;
@@ -41,10 +39,19 @@ void ResourceManager::_acquire(ResourceType resourceType, Process *process)
 
 bool ResourceManager::canAcquire(Process *process)
 {
-    return !((process->didRequestModem()    && !_canAcquire(ResourceType::MODEM, process))     |
-             (process->didRequestScanner()  && !_canAcquire(ResourceType::SCANNER, process))   |
-             (process->didRequestDrive()    && !_canAcquire(ResourceType::DRIVE, process))     |
-             (process->didRequestPrinter()  && !_canAcquire(ResourceType::PRINTER, process)));
+    bool result =  !((process->didRequestModem()    && !_canAcquire(ResourceType::MODEM, process))     ||
+                     (process->didRequestScanner()  && !_canAcquire(ResourceType::SCANNER, process))   ||
+                     (process->didRequestDrive()    && !_canAcquire(ResourceType::DRIVE, process))     ||
+                     (process->didRequestPrinter()  && !_canAcquire(ResourceType::PRINTER, process)));
+
+    if (!result) {
+        if (process->didRequestModem()) _addToQueue(ResourceType::MODEM, process);
+        if (process->didRequestScanner()) _addToQueue(ResourceType::SCANNER, process);
+        if (process->didRequestDrive()) _addToQueue(ResourceType::DRIVE, process);
+        if (process->didRequestPrinter()) _addToQueue(ResourceType::PRINTER, process);
+    }
+
+    return result;
 }
 
 bool ResourceManager::acquireAll(Process *process)
