@@ -123,5 +123,5 @@ void MemoryManager::printMemory(){
         printf("%d|", it->blocks + it->offset - 1);
     }
     printf("\n");
-    printf("-----------------------");
+    printf("-----------------------\n");
 }
