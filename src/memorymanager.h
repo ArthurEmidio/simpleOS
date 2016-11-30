@@ -112,6 +112,13 @@ public:
      */
     bool deallocateMemory(Process *process);
 
+    /*!
+     * Returns whether there is available space in memory for the process.
+     *
+     * Note that this method does not do memory allocation, it only checks.
+     * \param process The process to be allocated.
+     * \return \c true if there is space available in memory for the process, or \c false otherwise.
+     */
     bool canAllocate(Process *process);
 
 };

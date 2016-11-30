@@ -10,9 +10,6 @@
 #include <queue>
 #include <utility>
 #include <algorithm>
-#ifdef _WIN32
-    #include <windows.h>
-#endif // __WINDOWS__
 
 /*!
  * \brief \c The Dispatcher class is the context behind the execution of an operating system.
@@ -38,6 +35,13 @@ class Dispatcher
      */
     std::pair<int, std::vector<Process*>> _getNextProcesses();
 
+    /*!
+     * \brief Returns whether the process can be executed.
+     * \param process The process.
+     * \param memoryManager The memory manager.
+     * \param resourceManager The resource manager.
+     * \return \c true if the process can have memory and resources allocated, or \c false otherwise.
+     */
     bool _canRun(Process *process, MemoryManager &memoryManager, ResourceManager &resourceManager);
 
     /*!

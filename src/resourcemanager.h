@@ -134,7 +134,15 @@ public:
      */
     void releaseAll(Process *process, MemoryManager &memoryManager);
 
+    /*!
+     * \brief Returns whether the resources can be acquired.
+     *
+     * Note that this method does not acquire the resources, it only checks.
+     * \param process The process that wants to have the resources acquired.
+     * \return \c true if all the resources can be acquired, or \c false otherwise.
+     */
     bool canAcquire(Process *process);
+
     /*!
      * \brief Prints which resource is allocated to which process.
      */
