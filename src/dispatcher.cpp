@@ -77,6 +77,7 @@ void Dispatcher::run()
         }
 
         resourceManager.printResources();
+        memoryManager.printMemory();
         if (currProcess) {
             char wait;
             std::cin >> wait;

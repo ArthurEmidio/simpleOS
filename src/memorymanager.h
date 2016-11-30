@@ -4,6 +4,7 @@
 #include "process.h"
 
 #include <list>
+#include <cstdio>
 
 /*!
  * \brief The \c MemoryManager class is responsible for managing the requests to memory allocation.
@@ -120,6 +121,11 @@ public:
      * \return \c true if there is space available in memory for the process, or \c false otherwise.
      */
     bool canAllocate(Process *process);
+
+    /*!
+     * Prints memory segments.
+     */
+    void printMemory();
 
 };
 

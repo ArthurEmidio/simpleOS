@@ -104,3 +104,24 @@ bool MemoryManager::_deallocate(std::list<MemorySet> &segment, Process *process)
 
     return false;
 }
+
+void MemoryManager::printMemory(){
+    printf("---     Memoria:    ---\n");
+    printf(" - RealTimeSegment: ");
+    for (auto it = _realTimeSegment.begin(); it != _realTimeSegment.end(); it++){
+        printf("%d ", it->offset);
+        if(it->process) printf("PID%d ", it->process->getPid());
+        else printf("livre ");
+        printf("%d|", it->blocks + it->offset);
+    }
+    printf("\n");
+    printf(" - UserSegment: ");
+    for (auto it = _userSegment.begin(); it != _userSegment.end(); it++){
+        printf("%d ", it->offset);
+        if(it->process) printf("PID%d ", it->process->getPid());
+        else printf("livre ");
+        printf("%d|", it->blocks + it->offset);
+    }
+    printf("\n");
+    printf("-----------------------");
+}
