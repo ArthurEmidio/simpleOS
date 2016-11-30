@@ -14,10 +14,8 @@ bool ResourceManager::_canAcquire(ResourceType resourceType, Process *process)
     ResourceInfo &info = _resources[resourceType];
     if (info.allocTable.count(process) == 1 && info.allocTable[process] == ProcessStatus::WITH_RESOURCE) {
         return true;
-    }
-    else
-    {
-        info.allocTable[process] = ProcessStatus::IN_QUEUE;
+    } else {
+        _addToQueue(resourceType, process);
     }
 
     return info.allocated < info.capacity;
