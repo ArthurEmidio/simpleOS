@@ -8,8 +8,6 @@
 #include "dispatcher.h"
 #include "process.h"
 
-#include "testprocessmanager.h"
-
 int main(int argc, char *argv[])
 {
     if (argc < 2) {

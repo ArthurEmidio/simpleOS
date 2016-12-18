@@ -56,7 +56,6 @@ void Dispatcher::run()
 
         processManager.printQueues();
 
-
         if (!currProcess && !processManager.isEmpty()) {
             for (auto it = processManager.begin(); it != processManager.end(); it++) {
                 currProcess = *it;
@@ -79,10 +78,7 @@ void Dispatcher::run()
         resourceManager.printResources();
         memoryManager.printMemory();
         if (currProcess) {
-            char wait;
-            std::cin >> wait;
             _sendToCPU(currProcess);
-            std::cin >> wait;
             if (currProcess->getProcessingTime() <= 0) { // finished execution
                 memoryManager.deallocateMemory(currProcess);
                 resourceManager.releaseAll(currProcess, memoryManager);

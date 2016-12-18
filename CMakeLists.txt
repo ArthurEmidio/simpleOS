@@ -9,7 +9,6 @@ add_executable(simpleSO WIN32
     src/resourcemanager.cpp
     src/process.cpp
     src/processmanager.cpp
-    src/testprocessmanager.cpp
 )
 
 add_definitions(-std=c++11)
